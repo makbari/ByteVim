@@ -79,4 +79,37 @@ function M.on_attach(on_attach)
     end,
   })
 end
+
+---@param fn fun()
+function M.on_very_lazy(fn)
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "VeryLazy",
+    callback = function()
+      fn()
+    end,
+  })
+end
+
+---@param opts? {force?:boolean, buf?:number}
+function M.format(opts)
+  opts = opts or {}
+  local buf = opts.buf or vim.api.nvim_get_current_buf()
+  if not ((opts and opts.force) or M.enabled(buf)) then
+    return
+  end
+
+  local done = false
+  for _, formatter in ipairs(M.resolve(buf)) do
+    if formatter.active then
+      done = true
+      LazyVim.try(function()
+        return formatter.format(buf)
+      end, { msg = "Formatter `" .. formatter.name .. "` failed" })
+    end
+  end
+
+  if not done and opts and opts.force then
+    LazyVim.warn("No formatter available", { title = "LazyVim" })
+  end
+end
 return M

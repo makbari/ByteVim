@@ -161,4 +161,5 @@ M.copyFilePathAndLineNumber = function()
     print("Copied full path to clipboard: " .. current_file .. "#L" .. current_line)
   end
 end
+
 return M
