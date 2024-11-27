@@ -1,5 +1,47 @@
 return {
   {
+    "nvimtools/none-ls.nvim",
+    event = "VeryLazy",
+    dependencies = { "mason.nvim" },
+    init = function()
+      require("utils.lsp").on_very_lazy(function()
+        -- Register the formatter
+        require("utils.lsp").format.register({
+          name = "none-ls.nvim",
+          priority = 200, -- Higher priority for `none-ls.nvim`
+          primary = true,
+          format = function(buf)
+            return require("utils.lsp").format({
+              bufnr = buf,
+              filter = function(client)
+                return client.name == "null-ls"
+              end,
+            })
+          end,
+          sources = function(buf)
+            local null_ls_sources = require("null-ls.sources")
+            local available_sources = null_ls_sources.get_available(vim.bo[buf].filetype, "NULL_LS_FORMATTING") or {}
+            return vim.tbl_map(function(source)
+              return source.name
+            end, available_sources)
+          end,
+        })
+      end)
+    end,
+    opts = function(_, opts)
+      local nls = require("null-ls")
+      opts.root_dir = opts.root_dir
+        or require("null-ls.utils").root_pattern(".null-ls-root", ".neoconf.json", "Makefile", ".git")
+      opts.sources = vim.list_extend(opts.sources or {}, {
+        -- Add your desired formatters and linters here
+        nls.builtins.formatting.fish_indent,
+        nls.builtins.diagnostics.fish,
+        nls.builtins.formatting.stylua,
+        nls.builtins.formatting.shfmt,
+      })
+    end,
+  },
+  {
     "neovim/nvim-lspconfig",
     event = { "BufReadPost", "BufWritePost" },
     dependencies = {
