@@ -41,18 +41,16 @@ return {
       })
     end,
   },
-  {
+   -- lspconfig
+   {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPost", "BufWritePost" },
     dependencies = {
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
+      "mason.nvim",
+      { "williamboman/mason-lspconfig.nvim", config = function() end },
     },
-
     opts = function()
-      local icons = require("config.icons") -- Diagnostics icons
-
-      return {
+      local icons = require("config.icons").diagnostics
+      local ret = {
         diagnostics = {
           underline = true,
           update_in_insert = false,
@@ -64,135 +62,224 @@ return {
           severity_sort = true,
           signs = {
             text = {
-              [vim.diagnostic.severity.ERROR] = icons.diagnostics.Error,
-              [vim.diagnostic.severity.WARN] = icons.diagnostics.Warn,
-              [vim.diagnostic.severity.HINT] = icons.diagnostics.Hint,
-              [vim.diagnostic.severity.INFO] = icons.diagnostics.Info,
+              [vim.diagnostic.severity.ERROR] = icons.Error,
+              [vim.diagnostic.severity.WARN] = icons.Warn,
+              [vim.diagnostic.severity.HINT] = icons.Hint,
+              [vim.diagnostic.severity.INFO] = icons.Info,
             },
           },
         },
-        capabilities = vim.lsp.protocol.make_client_capabilities(),
+        
+        inlay_hints = {
+          enabled = true,
+          exclude = { "vue" }, -- filetypes for which you don't want to enable inlay hints
+        },
+        
+        codelens = {
+          enabled = false,
+        },
+        document_highlight = {
+          enabled = true,
+        },
+        capabilities = {
+          workspace = {
+            fileOperations = {
+              didRename = true,
+              willRename = true,
+            },
+          },
+        },
         format = {
           formatting_options = nil,
-          timeout_ms = 3000,
+          timeout_ms = nil,
         },
         servers = {
           lua_ls = {
             settings = {
               Lua = {
-                workspace = { checkThirdParty = false },
-                hint = { enable = true },
+                workspace = {
+                  checkThirdParty = false,
+                },
+                codeLens = {
+                  enable = true,
+                },
+                completion = {
+                  callSnippet = "Replace",
+                },
+                doc = {
+                  privateName = { "^_" },
+                },
+                hint = {
+                  enable = true,
+                  setType = false,
+                  paramType = true,
+                  paramName = "Disable",
+                  semicolon = "Disable",
+                  arrayIndex = "Disable",
+                },
               },
             },
           },
-          ts_ls = {
-            root_dir = function()
-              if ByteVim.lsp.deno_config_exist() then
-                return nil -- Disable ts_ls if `deno.json` exists
-              end
-              return vim.fn.getcwd()
-            end,
-          },
-          denols = {
-            root_dir = ByteVim.lsp.deno_config_exist,
-            settings = { deno = { enable = true } },
-          },
-          eslint = {
-            condition = ByteVim.lsp.eslint_config_exists,
-          },
-          rust_analyzer = {},
-          pyright = {},
         },
+        -- you can do any additional lsp server setup here
+        -- return true if you don't want this server to be setup with lspconfig
+        ---@type table<string, fun(server:string, opts:_.lspconfig.options):boolean?>
         setup = {
-          ts_ls = function(_, opts)
-            if ByteVim.lsp.deno_config_exist() then
-              ByteVim.lsp.stop_lsp_client_by_name("ts_ls")
-              return true
-            end
-            require("lspconfig").ts_ls.setup(opts)
-            return true
-          end,
-          denols = function(_, opts)
-            if not ByteVim.lsp.deno_config_exist() then
-              ByteVim.lsp.stop_lsp_client_by_name("denols")
-              return true
-            end
-            require("lspconfig").denols.setup(opts)
-            return true
-          end,
+          -- example to setup with typescript.nvim
+          -- tsserver = function(_, opts)
+          --   require("typescript").setup({ server = opts })
+          --   return true
+          -- end,
+          -- Specify * to use this function as a fallback for any server
+          -- ["*"] = function(server, opts) end,
         },
-        on_attach = ByteVim.lsp_keymaps.on_attach, -- Attach keymaps on LSP attach
       }
+      return ret
     end,
+    ---@param opts PluginLspOpts
     config = function(_, opts)
-
-      ByteVim.generic.register(ByteVim.generic.formatter())
+      -- setup autoformat
+      ByteVim.format.register(ByteVim.generic.formatter())
 
       -- setup keymaps
-      ByteVim.lsp.on_attach(function(client, buffer)
-        require("ByteVim.plugins.lsp.keymaps").on_attach(client, buffer)
-      end)
+      -- LazyVim.lsp.on_attach(function(client, buffer)
+      --   require("utils.lsp_keymaps").on_attach(client, buffer)
+      -- end)
 
       ByteVim.lsp.setup()
-      ByteVim.lsp.on_dynamic_capability(require("ByteVim.plugins.lsp.keymaps").on_attach)
+      -- ByteVim.lsp.on_dynamic_capability(require("lazyvim.plugins.lsp.keymaps").on_attach)
 
-      -- Diagnostics setup
-      vim.diagnostic.config(opts.diagnostics)
-
-      -- Add capabilities for autocomplete plugins like nvim-cmp
-      local capabilities = vim.tbl_deep_extend(
-        "force",
-        vim.lsp.protocol.make_client_capabilities(),
-        require("cmp_nvim_lsp").default_capabilities()
-      )
-      opts.capabilities = vim.tbl_deep_extend("force", capabilities, opts.capabilities or {})
-
-      -- Setup LSP servers dynamically
-      local lspconfig = require("lspconfig")
-      for server, server_opts in pairs(opts.servers) do
-        local merged_opts = vim.tbl_deep_extend("force", { capabilities = opts.capabilities }, server_opts)
-        if opts.setup[server] then
-          if opts.setup[server](server, merged_opts) then
-            goto continue
+      -- diagnostics signs
+      if vim.fn.has("nvim-0.10.0") == 0 then
+        if type(opts.diagnostics.signs) ~= "boolean" then
+          for severity, icon in pairs(opts.diagnostics.signs.text) do
+            local name = vim.diagnostic.severity[severity]:lower():gsub("^%l", string.upper)
+            name = "DiagnosticSign" .. name
+            vim.fn.sign_define(name, { text = icon, texthl = name, numhl = "" })
           end
         end
-        lspconfig[server].setup(merged_opts)
-        ::continue::
+      end
+
+      if vim.fn.has("nvim-0.10") == 1 then
+        -- inlay hints
+        if opts.inlay_hints.enabled then
+          ByteVim.lsp.on_supports_method("textDocument/inlayHint", function(client, buffer)
+            if
+              vim.api.nvim_buf_is_valid(buffer)
+              and vim.bo[buffer].buftype == ""
+              and not vim.tbl_contains(opts.inlay_hints.exclude, vim.bo[buffer].filetype)
+            then
+              vim.lsp.inlay_hint.enable(true, { bufnr = buffer })
+            end
+          end)
+        end
+
+        -- code lens
+        if opts.codelens.enabled and vim.lsp.codelens then
+          ByteVim.lsp.on_supports_method("textDocument/codeLens", function(client, buffer)
+            vim.lsp.codelens.refresh()
+            vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "InsertLeave" }, {
+              buffer = buffer,
+              callback = vim.lsp.codelens.refresh,
+            })
+          end)
+        end
+      end
+
+      if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
+        opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
+          or function(diagnostic)
+            local icons = require("config.icons").diagnostics
+            for d, icon in pairs(icons) do
+              if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
+                return icon
+              end
+            end
+          end
+      end
+
+      vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
+
+      local servers = opts.servers
+      local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+      local has_blink, blink = pcall(require, "blink.cmp")
+      local capabilities = vim.tbl_deep_extend(
+        "force",
+        {},
+        vim.lsp.protocol.make_client_capabilities(),
+        has_cmp and cmp_nvim_lsp.default_capabilities() or {},
+        has_blink and blink.get_lsp_capabilities() or {},
+        opts.capabilities or {}
+      )
+
+      local function setup(server)
+        local server_opts = vim.tbl_deep_extend("force", {
+          capabilities = vim.deepcopy(capabilities),
+        }, servers[server] or {})
+        if server_opts.enabled == false then
+          return
+        end
+
+        if opts.setup[server] then
+          if opts.setup[server](server, server_opts) then
+            return
+          end
+        elseif opts.setup["*"] then
+          if opts.setup["*"](server, server_opts) then
+            return
+          end
+        end
+        require("lspconfig")[server].setup(server_opts)
+      end
+
+      -- get all the servers that are available through mason-lspconfig
+      local have_mason, mlsp = pcall(require, "mason-lspconfig")
+      local all_mslp_servers = {}
+      if have_mason then
+        all_mslp_servers = vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
+      end
+
+      local ensure_installed = {} ---@type string[]
+      for server, server_opts in pairs(servers) do
+        if server_opts then
+          server_opts = server_opts == true and {} or server_opts
+          if server_opts.enabled ~= false then
+            -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
+            if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server) then
+              setup(server)
+            else
+              ensure_installed[#ensure_installed + 1] = server
+            end
+          end
+        end
+      end
+
+      if have_mason then
+        mlsp.setup({
+          ensure_installed = vim.tbl_deep_extend(
+            "force",
+            ensure_installed,
+            ByteVim.opts("mason-lspconfig.nvim").ensure_installed or {}
+          ),
+          handlers = { setup },
+        })
+      end
+
+      if ByteVim.lsp.is_enabled("denols") and LazyVim.lsp.is_enabled("vtsls") then
+        local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+        ByteVim.lsp.disable("vtsls", is_deno)
+        ByteVim.lsp.disable("denols", function(root_dir, config)
+          if not is_deno(root_dir) then
+            config.settings.deno.enable = false
+          end
+          return false
+        end)
       end
     end,
   },
 
-  -- Mason (Package Manager for LSP Tools)
-  {
-    "williamboman/mason.nvim",
-    cmd = "Mason",
-    keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Open Mason" } },
-    build = ":MasonUpdate",
-    opts = {
-      ensure_installed = {
-        "stylua", -- Formatter
-        "shfmt", -- Formatter
-        "lua-language-server", -- LSP
-        "typescript-language-server", -- LSP
-        "pyright", -- LSP
-        "rust-analyzer", -- LSP
-        "deno", -- LSP
-      },
-    },
-    config = function(_, opts)
-      require("mason").setup()
-      local mason_registry = require("mason-registry")
-      mason_registry.refresh(function()
-        for _, tool in ipairs(opts.ensure_installed) do
-          local p = mason_registry.get_package(tool)
-          if not p:is_installed() then
-            p:install()
-          end
-        end
-      end)
-    end,
-  },
 
+  -- Mason (Package Manager for LSP Tools)
   -- Mason-LSPConfig (for Managing LSP Servers)
   {
     "williamboman/mason-lspconfig.nvim",

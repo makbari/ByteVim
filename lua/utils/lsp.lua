@@ -110,4 +110,57 @@ function M.format(opts)
   end
 end
 
+---@param fn fun(client:vim.lsp.Client, buffer):boolean?
+---@param opts? {group?: integer}
+function M.on_dynamic_capability(fn, opts)
+  return vim.api.nvim_create_autocmd("User", {
+    pattern = "LspDynamicCapability",
+    group = opts and opts.group or nil,
+    callback = function(args)
+      local client = vim.lsp.get_client_by_id(args.data.client_id)
+      local buffer = args.data.buffer ---@type number
+      if client then
+        return fn(client, buffer)
+      end
+    end,
+  })
+end
+M._supports_method = {}
+
+function M.setup()
+  local register_capability = vim.lsp.handlers["client/registerCapability"]
+  vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
+    ---@diagnostic disable-next-line: no-unknown
+    local ret = register_capability(err, res, ctx)
+    local client = vim.lsp.get_client_by_id(ctx.client_id)
+    if client then
+      for buffer in pairs(client.attached_buffers) do
+        vim.api.nvim_exec_autocmds("User", {
+          pattern = "LspDynamicCapability",
+          data = { client_id = client.id, buffer = buffer },
+        })
+      end
+    end
+    return ret
+  end
+  M.on_attach(M._check_methods)
+  M.on_dynamic_capability(M._check_methods)
+end
+
+M._supports_method = {}
+
+function M.on_supports_method(method, fn)
+  M._supports_method[method] = M._supports_method[method] or setmetatable({}, { __mode = "k" })
+  return vim.api.nvim_create_autocmd("User", {
+    pattern = "LspSupportsMethod",
+    callback = function(args)
+      local client = vim.lsp.get_client_by_id(args.data.client_id)
+      local buffer = args.data.buffer ---@type number
+      if client and method == args.data.method then
+        return fn(client, buffer)
+      end
+    end,
+  })
+end
+
 return M

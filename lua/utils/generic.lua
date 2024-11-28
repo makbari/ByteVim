@@ -5,9 +5,39 @@ local M = {}
 ---@return string
 
 M.formatters = {} ---@type LazyFormatter[]
-
+function M.is_list(t)
+    local i = 0
+    ---@diagnostic disable-next-line: no-unknown
+    for _ in pairs(t) do
+      i = i + 1
+      if t[i] == nil then
+        return false
+      end
+    end
+    return true
+  end
+  
+local function can_merge(v)
+    return type(v) == "table" and (vim.tbl_isempty(v) or not M.is_list(v))
+  end
 function M.merge(...)
-    return vim.tbl_deep_extend("force", ...)
+    local ret = select(1, ...)
+    if ret == vim.NIL then
+      ret = nil
+    end
+    for i = 2, select("#", ...) do
+      local value = select(i, ...)
+      if can_merge(ret) and can_merge(value) then
+        for k, v in pairs(value) do
+          ret[k] = M.merge(ret[k], v)
+        end
+      elseif value == vim.NIL then
+        ret = nil
+      elseif value ~= nil then
+        ret = value
+      end
+    end
+    return ret
   end
   
 function M.format(component, text, hl_group)
@@ -49,10 +79,10 @@ function M.formatter(opts)
     primary = true,
     priority = 1,
     format = function(buf)
-      M.format(ByteVim.merge({}, filter, { bufnr = buf }))
+      M.format(M.merge({}, filter, { bufnr = buf }))
     end,
     sources = function(buf)
-      local clients = M.get_clients(ByteVim.merge({}, filter, { bufnr = buf }))
+      local clients = M.get_clients(M.merge({}, filter, { bufnr = buf }))
       ---@param client vim.lsp.Client
       local ret = vim.tbl_filter(function(client)
         return client.supports_method("textDocument/formatting")
@@ -64,7 +94,7 @@ function M.formatter(opts)
       end, ret)
     end,
   }
-  return ByteVim.merge(ret, opts) --[[@as LazyFormatter]]
+  return M.merge(ret, opts) --[[@as LazyFormatter]]
 end
 
 ---@param formatter LazyFormatter
