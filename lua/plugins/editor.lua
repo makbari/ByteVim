@@ -397,7 +397,7 @@ return {
       {
         "<C-g>",
         function()
-          local root_dir = ByteVim.root()
+          local root_dir = ByteVim.path.root()
           local fzf_lua = require("fzf-lua")
           fzf_lua.setup({
             grep = {
@@ -417,7 +417,7 @@ return {
       {
         "<leader>sw",
         function()
-          local root_dir = ByteVim.git()
+          local root_dir = ByteVim.path.git()
           local fzf_lua = require("fzf-lua")
           fzf_lua.setup({
             grep = {
@@ -437,7 +437,7 @@ return {
       {
         "<leader>fr",
         function()
-          local root_dir = ByteVim.git()
+          local root_dir = ByteVim.path.git()
           require("fzf-lua").oldfiles({ cwd = root_dir })
         end,
         desc = "Find Recent Files",
@@ -445,7 +445,7 @@ return {
       {
         "<leader>/",
         function()
-          local root_dir = ByteVim.root()
+          local root_dir = ByteVim.path.root()
           require("fzf-lua").live_grep({ cwd = root_dir, multiprocess = true })
         end,
         desc = "Grep Files at current directory",
@@ -453,7 +453,7 @@ return {
       {
         "<leader>ff",
         function()
-          local root_dir = ByteVim.git()
+          local root_dir = ByteVim.path.git()
           require("fzf-lua").git_files({ cwd = root_dir })
         end,
         desc = "Find Git Files",
@@ -470,7 +470,7 @@ return {
       {
         "<leader>sw",
         function()
-          local root_dir = ByteVim.git()
+          local root_dir = ByteVim.path.git()
           require("fzf-lua").grep_cword({ cwd = root_dir, multiprocess = true })
         end,
         desc = "Search word under cursor (git root)",
@@ -478,7 +478,7 @@ return {
       {
         "<leader>sW",
         function()
-          local root_dir = ByteVim.git()
+          local root_dir = ByteVim.path.git()
           require("fzf-lua").grep_cWORD({ cwd = root_dir, multiprocess = true })
         end,
         desc = "Search WORD under cursor (git root)",
@@ -486,7 +486,7 @@ return {
       {
         "<leader>gs",
         function()
-          local root_dir = ByteVim.git()
+          local root_dir = ByteVim.path.git()
           require("fzf-lua").git_status({ cwd = root_dir })
         end,
         desc = "Git Status",
