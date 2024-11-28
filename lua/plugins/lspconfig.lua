@@ -4,14 +4,14 @@ return {
     event = "VeryLazy",
     dependencies = { "mason.nvim" },
     init = function()
-      require("utils.lsp").on_very_lazy(function()
+      ByteVim.lsp.on_very_lazy(function()
         -- Register the formatter
-        require("utils.lsp").format.register({
+        ByteVim.format.register({
           name = "none-ls.nvim",
           priority = 200, -- Higher priority for `none-ls.nvim`
           primary = true,
           format = function(buf)
-            return require("utils.lsp").format({
+            return ByteVim.lsp.format({
               bufnr = buf,
               filter = function(client)
                 return client.name == "null-ls"
