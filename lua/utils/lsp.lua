@@ -90,26 +90,24 @@ function M.on_very_lazy(fn)
   })
 end
 
----@param opts? {force?:boolean, buf?:number}
+---@param opts? lsp.Client.format
 function M.format(opts)
-  opts = opts or {}
-  local buf = opts.buf or vim.api.nvim_get_current_buf()
-  if not ((opts and opts.force) or M.enabled(buf)) then
-    return
-  end
-
-  local done = false
-  for _, formatter in ipairs(M.resolve(buf)) do
-    if formatter.active then
-      done = true
-      LazyVim.try(function()
-        return formatter.format(buf)
-      end, { msg = "Formatter `" .. formatter.name .. "` failed" })
-    end
-  end
-
-  if not done and opts and opts.force then
-    LazyVim.warn("No formatter available", { title = "LazyVim" })
+  opts = vim.tbl_deep_extend(
+    "force",
+    {},
+    opts or {},
+    ByteVim.opts("nvim-lspconfig").format or {},
+    ByteVim.opts("conform.nvim").format or {}
+  )
+  local ok, conform = pcall(require, "conform")
+  -- use conform for formatting with LSP when available,
+  -- since it has better format diffing
+  if ok then
+    opts.formatters = {}
+    conform.format(opts)
+  else
+    vim.lsp.buf.format(opts)
   end
 end
+
 return M

@@ -51,8 +51,6 @@ return {
 
     opts = function()
       local icons = require("config.icons") -- Diagnostics icons
-      local lsp_utils = require("utils.lsp") -- LSP helper functions
-      local lsp_keymaps = require("utils.lsp-keymaps") -- Custom LSP keymaps
 
       return {
         diagnostics = {
@@ -89,44 +87,55 @@ return {
           },
           ts_ls = {
             root_dir = function()
-              if lsp_utils.deno_config_exist() then
+              if ByteVim.lsp.deno_config_exist() then
                 return nil -- Disable ts_ls if `deno.json` exists
               end
               return vim.fn.getcwd()
             end,
           },
           denols = {
-            root_dir = lsp_utils.deno_config_exist,
+            root_dir = ByteVim.lsp.deno_config_exist,
             settings = { deno = { enable = true } },
           },
           eslint = {
-            condition = lsp_utils.eslint_config_exists,
+            condition = ByteVim.lsp.eslint_config_exists,
           },
           rust_analyzer = {},
           pyright = {},
         },
         setup = {
           ts_ls = function(_, opts)
-            if lsp_utils.deno_config_exist() then
-              lsp_utils.stop_lsp_client_by_name("ts_ls")
+            if ByteVim.lsp.deno_config_exist() then
+              ByteVim.lsp.stop_lsp_client_by_name("ts_ls")
               return true
             end
             require("lspconfig").ts_ls.setup(opts)
             return true
           end,
           denols = function(_, opts)
-            if not lsp_utils.deno_config_exist() then
-              lsp_utils.stop_lsp_client_by_name("denols")
+            if not ByteVim.lsp.deno_config_exist() then
+              ByteVim.lsp.stop_lsp_client_by_name("denols")
               return true
             end
             require("lspconfig").denols.setup(opts)
             return true
           end,
         },
-        on_attach = lsp_keymaps.on_attach, -- Attach keymaps on LSP attach
+        on_attach = ByteVim.lsp_keymaps.on_attach, -- Attach keymaps on LSP attach
       }
     end,
     config = function(_, opts)
+
+      ByteVim.generic.register(ByteVim.generic.formatter())
+
+      -- setup keymaps
+      ByteVim.lsp.on_attach(function(client, buffer)
+        require("ByteVim.plugins.lsp.keymaps").on_attach(client, buffer)
+      end)
+
+      ByteVim.lsp.setup()
+      ByteVim.lsp.on_dynamic_capability(require("ByteVim.plugins.lsp.keymaps").on_attach)
+
       -- Diagnostics setup
       vim.diagnostic.config(opts.diagnostics)
 

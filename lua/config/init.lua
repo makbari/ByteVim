@@ -1,4 +1,3 @@
-
 _G.ByteVim = require("utils")
 require("config.options")
 require("config.lazy")
