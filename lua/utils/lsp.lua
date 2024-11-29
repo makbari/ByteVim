@@ -181,11 +181,6 @@ function M.setup(options)
             })
           end
         end
-
-        -- Additional buffer-specific on_attach actions
-        M.on_attach(function(_, _)
-          -- Add additional mappings or configurations if necessary
-        end)
       end,
     }, server_options)
 

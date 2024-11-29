@@ -10,6 +10,7 @@ return {
   {
     "Saecki/crates.nvim",
     event = { "BufRead Cargo.toml" },
+    ft = { "rust", "toml" },
     opts = {
       completion = {
         crates = {
@@ -23,6 +24,11 @@ return {
         hover = true,
       },
     },
+    config = function(_, opts)
+      local crates = require("crates")
+      crates.setup(opts)
+      crates.show()
+    end,
   },
 
   -- Add Rust & related to treesitter
@@ -40,7 +46,7 @@ return {
 
   {
     "mrcjkb/rustaceanvim",
-    version = vim.fn.has("nvim-0.10.0") == 0 and "^4" or false,
+    version = "^5",
     ft = { "rust" },
     opts = {
       server = {

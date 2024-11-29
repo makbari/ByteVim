@@ -94,10 +94,8 @@ return {
           if not (args.data and args.data.client_id) then
             return
           end
-
           local bufnr = args.buf
           local client = vim.lsp.get_client_by_id(args.data.client_id)
-
           -- Check if this is a Deno or TypeScript project before attaching inlay hints
           local is_deno_project = ByteVim.lsp.deno_config_exist()
           local is_ts_project = ByteVim.lsp.get_config_path("package.json") ~= nil
