@@ -27,6 +27,19 @@ function M.setup_keymaps()
   for _, keymap in ipairs(keymaps) do
     ByteVim.utils.keymap(keymap.keys, keymap.func, keymap.desc, keymap.mode, nil)
   end
+
+  local fzf_lua = require("fzf-lua")
+
+  vim.lsp.handlers["textDocument/codeAction"] = fzf_lua.lsp_code_actions
+  vim.lsp.handlers["textDocument/definition"] = fzf_lua.lsp_definitions
+  vim.lsp.handlers["textDocument/declaration"] = fzf_lua.lsp_declarations
+  vim.lsp.handlers["textDocument/typeDefinition"] = fzf_lua.lsp_typedefs
+  vim.lsp.handlers["textDocument/implementation"] = fzf_lua.lsp_implementations
+  vim.lsp.handlers["textDocument/references"] = fzf_lua.lsp_references
+  vim.lsp.handlers["textDocument/documentSymbol"] = fzf_lua.lsp_document_symbols
+  vim.lsp.handlers["workspace/symbol"] = fzf_lua.lsp_workspace_symbols
+  vim.lsp.handlers["callHierarchy/incomingCalls"] = fzf_lua.lsp_incoming_calls
+  vim.lsp.handlers["callHierarchy/outgoingCalls"] = fzf_lua.lsp_outgoing_calls
 end
 
 return M
