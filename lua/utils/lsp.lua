@@ -2,7 +2,7 @@ local Path = require("utils.path")
 
 local M = {}
 
-M.get_config_path = function(filename)
+function M.get_config_path(filename)
   local current_dir = vim.fn.getcwd()
   local config_file = current_dir .. "/" .. filename
   if vim.fn.filereadable(config_file) == 1 then
@@ -20,7 +20,7 @@ M.get_config_path = function(filename)
   return nil
 end
 
-M.stop_lsp_client_by_name = function(name)
+function M.stop_lsp_client_by_name (name)
   local clients = vim.lsp.get_active_clients()
   for _, client in ipairs(clients) do
     if client.name == name then
@@ -32,21 +32,21 @@ M.stop_lsp_client_by_name = function(name)
   vim.notify("No active LSP client with name: " .. name)
 end
 
-M.dprint_config_path = function()
+function M.dprint_config_path ()
   return M.get_config_path("dprint.json")
 end
 
-M.dprint_config_exist = function()
+function M.dprint_config_exist ()
   local has_config = M.get_config_path("dprint.json")
   return has_config ~= nil
 end
 
-M.deno_config_exist = function()
+function M.deno_config_exist()
   local has_json_config = M.get_config_path("deno.json")
   return has_json_config ~= nil
 end
 
-M.eslint_config_exists = function()
+function M.eslint_config_exists ()
   local current_dir = vim.fn.getcwd()
   local config_files =
     { ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.yaml", ".eslintrc.yml", ".eslintrc.json", ".eslintrc" }
@@ -87,6 +87,80 @@ function M.on_very_lazy(fn)
       fn()
     end,
   })
+end
+
+
+
+function M.setup(options)
+  -- Default options with sensible values
+  options = vim.tbl_deep_extend("force", {
+    servers = {},
+    inlay_hints = { enabled = true },
+    setup = {},
+  }, options or {})
+
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  local cmp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+  capabilities = vim.tbl_deep_extend("force", capabilities, cmp_capabilities)
+
+  require("mason-lspconfig").setup({
+    ensure_installed = vim.tbl_keys(options.servers), -- Automatically install listed servers
+  })
+
+  -- Setup each server
+  for server_name, server_options in pairs(options.servers) do
+    local server_config = vim.tbl_deep_extend("force", {
+      capabilities = capabilities,
+      on_attach = function(client, buffer)
+        ByteVim.lsp_keymaps.setup_keymaps(client, buffer)
+        if vim.fn.has("nvim-0.10") == 1 then
+          -- Inlay hints
+          if options.inlay_hints.enabled then
+            vim.api.nvim_create_autocmd("LspAttach", {
+              callback = function(args)
+                local client = vim.lsp.get_client_by_id(args.data.client_id)
+                local buffer = args.buf
+        
+                -- Ensure buffer is valid and not excluded
+                if
+                  client
+                  and vim.api.nvim_buf_is_valid(buffer)
+                  and vim.bo[buffer].buftype == ""
+                  and not vim.tbl_contains(options.inlay_hints.exclude, vim.bo[buffer].filetype)
+                  and client.supports_method("textDocument/inlayHint")
+                then
+                  -- Check if inlay_hint is available and a function
+                  local inlay_hint_available, inlay_hint = pcall(function()
+                    return vim.lsp.inlay_hint
+                  end)
+        
+                  if inlay_hint_available and type(inlay_hint) == "function" then
+                    -- Enable inlay hints
+                    inlay_hint(buffer, true)
+                  else
+                    vim.notify("Inlay hints are not supported in your Neovim version or configuration", vim.log.levels.WARN)
+                  end
+                end
+              end,
+            })
+          end
+        end
+        
+
+        -- Additional buffer-specific on_attach actions
+        M.on_attach(function(_, _)
+          -- Add additional mappings or configurations if necessary
+        end)
+      end,
+    }, server_options)
+
+    -- If there's a custom setup function for this server, use it
+    if options.setup[server_name] then
+      options.setup[server_name](require("lspconfig")[server_name], server_config)
+    else
+      require("lspconfig")[server_name].setup(server_config)
+    end
+  end
 end
 
 return M
