@@ -2,15 +2,15 @@ return {
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
-    'folke/lazydev.nvim',
-    ft = 'lua',
+    "folke/lazydev.nvim",
+    ft = "lua",
     opts = {
       library = {
-        { path = 'luvit-meta/library', words = { 'vim%.uv' } },
+        { path = "luvit-meta/library", words = { "vim%.uv" } },
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
+  { "Bilal2453/luvit-meta", lazy = true },
 
   {
     "neovim/nvim-lspconfig",
@@ -26,22 +26,33 @@ return {
         lua_ls = {
           settings = {
             Lua = {
-              workspace = { checkThirdParty = false },
+              workspace = {
+                checkThirdParty = false,
+                library = {
+                  "${3rd}/luv/library",
+                  unpack(vim.api.nvim_get_runtime_file("", true)),
+                },
+              },
               codeLens = { enable = true },
               completion = { callSnippet = "Replace" },
             },
           },
         },
         pyright = {},
+        ruff = {},
         ts_ls = {},
+        denols = {},
+        html = { filetypes = { "html", "twig", "hbs" } },
+        cssls = {},
+        dockerls = {},
+        terraformls = {},
+        jsonls = {},
+        yamlls = {},
       },
       inlay_hints = { enabled = true },
       setup = {},
     },
     config = function(_, opts)
-      local lspconfig = require("lspconfig")
-      
-  
       ByteVim.lsp.setup(opts)
     end,
   },
@@ -231,5 +242,4 @@ return {
       end,
     },
   },
-  
 }

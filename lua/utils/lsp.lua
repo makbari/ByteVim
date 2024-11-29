@@ -20,7 +20,7 @@ function M.get_config_path(filename)
   return nil
 end
 
-function M.stop_lsp_client_by_name (name)
+function M.stop_lsp_client_by_name(name)
   local clients = vim.lsp.get_active_clients()
   for _, client in ipairs(clients) do
     if client.name == name then
@@ -32,11 +32,11 @@ function M.stop_lsp_client_by_name (name)
   vim.notify("No active LSP client with name: " .. name)
 end
 
-function M.dprint_config_path ()
+function M.dprint_config_path()
   return M.get_config_path("dprint.json")
 end
 
-function M.dprint_config_exist ()
+function M.dprint_config_exist()
   local has_config = M.get_config_path("dprint.json")
   return has_config ~= nil
 end
@@ -46,7 +46,7 @@ function M.deno_config_exist()
   return has_json_config ~= nil
 end
 
-function M.eslint_config_exists ()
+function M.eslint_config_exists()
   local current_dir = vim.fn.getcwd()
   local config_files =
     { ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.yaml", ".eslintrc.yml", ".eslintrc.json", ".eslintrc" }
@@ -89,8 +89,6 @@ function M.on_very_lazy(fn)
   })
 end
 
-
-
 function M.setup(options)
   -- Default options with sensible values
   options = vim.tbl_deep_extend("force", {
@@ -120,32 +118,29 @@ function M.setup(options)
               callback = function(args)
                 local client = vim.lsp.get_client_by_id(args.data.client_id)
                 local buffer = args.buf
-        
+
                 -- Ensure buffer is valid and not excluded
                 if
                   client
                   and vim.api.nvim_buf_is_valid(buffer)
                   and vim.bo[buffer].buftype == ""
-                  and not vim.tbl_contains(options.inlay_hints.exclude, vim.bo[buffer].filetype)
+                  and not vim.tbl_contains(options.inlay_hints.exclude or {}, vim.bo[buffer].filetype)
                   and client.supports_method("textDocument/inlayHint")
                 then
                   -- Check if inlay_hint is available and a function
                   local inlay_hint_available, inlay_hint = pcall(function()
                     return vim.lsp.inlay_hint
                   end)
-        
+
                   if inlay_hint_available and type(inlay_hint) == "function" then
                     -- Enable inlay hints
                     inlay_hint(buffer, true)
-                  else
-                    vim.notify("Inlay hints are not supported in your Neovim version or configuration", vim.log.levels.WARN)
                   end
                 end
               end,
             })
           end
         end
-        
 
         -- Additional buffer-specific on_attach actions
         M.on_attach(function(_, _)
@@ -164,4 +159,3 @@ function M.setup(options)
 end
 
 return M
-
