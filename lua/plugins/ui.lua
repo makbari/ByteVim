@@ -26,15 +26,6 @@ return {
           lualine_a = { "mode" },
           lualine_b = { "branch", "diff", "diagnostics" },
           lualine_c = {
-            {
-              "diagnostics",
-              symbols = {
-                error = icons.diagnostics.Error,
-                warn = icons.diagnostics.Warn,
-                info = icons.diagnostics.Info,
-                hint = icons.diagnostics.Hint,
-              },
-            },
             { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
             {
               "filename",
@@ -42,14 +33,6 @@ return {
             }, -- Show the file path
           },
           lualine_x = {
-            {
-              "diff",
-              symbols = {
-                added = icons.git.LineAdded,
-                modified = icons.git.LineModified,
-                removed = icons.git.LineRemoved,
-              },
-            },
             { "encoding" },
             { "fileformat" },
             { "filetype" },
@@ -73,6 +56,15 @@ return {
     lazy = true,
     opts = {
       file = {
+        [".eslintrc.js"] = { glyph = "󰱺", hl = "MiniIconsYellow" },
+        [".node-version"] = { glyph = "", hl = "MiniIconsGreen" },
+        [".prettierrc"] = { glyph = "", hl = "MiniIconsPurple" },
+        [".yarnrc.yml"] = { glyph = "", hl = "MiniIconsBlue" },
+        ["eslint.config.js"] = { glyph = "󰱺", hl = "MiniIconsYellow" },
+        ["package.json"] = { glyph = "", hl = "MiniIconsGreen" },
+        ["tsconfig.json"] = { glyph = "", hl = "MiniIconsAzure" },
+        ["tsconfig.build.json"] = { glyph = "", hl = "MiniIconsAzure" },
+        ["yarn.lock"] = { glyph = "", hl = "MiniIconsBlue" },
         [".keep"] = { glyph = "󰊢", hl = "MiniIconsGrey" },
         ["devcontainer.json"] = { glyph = "", hl = "MiniIconsAzure" },
       },

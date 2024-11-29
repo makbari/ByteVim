@@ -89,28 +89,68 @@ function M.on_very_lazy(fn)
   })
 end
 
+function M.setup_typescript_lsp(capabilities)
+  local server_opts = { capabilities = capabilities }
+  local lspconfig = require("lspconfig")
+
+  -- Check if it's a Deno project
+  if M.deno_config_exist() then
+    lspconfig.denols.setup(server_opts)
+    vim.notify("Configured for Deno", vim.log.levels.INFO)
+  elseif M.get_config_path("package.json") then
+    -- Configure for TypeScript if package.json exists
+    lspconfig.ts_ls.setup(vim.tbl_deep_extend("force", server_opts, {
+      settings = {
+        code_lens = "off",
+        tsserver_file_preferences = {
+          includeInlayParameterNameHints = "literals",
+          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+          includeInlayFunctionParameterTypeHints = false,
+          includeInlayVariableTypeHints = true,
+          includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+          includeInlayPropertyDeclarationTypeHints = false,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayEnumMemberValueHints = true,
+        },
+      },
+    }))
+    vim.notify("Configured for TypeScript", vim.log.levels.INFO)
+  end
+end
 function M.setup(options)
+  local nvim_lsp = require("lspconfig")
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  local cmp_capabilities = require("cmp_nvim_lsp").default_capabilities()
+  capabilities = vim.tbl_deep_extend("force", capabilities, cmp_capabilities)
+
   -- Default options with sensible values
+
   options = vim.tbl_deep_extend("force", {
     servers = {},
     inlay_hints = { enabled = true },
     setup = {},
   }, options or {})
-
-  local capabilities = vim.lsp.protocol.make_client_capabilities()
-  local cmp_capabilities = require("cmp_nvim_lsp").default_capabilities()
-  capabilities = vim.tbl_deep_extend("force", capabilities, cmp_capabilities)
-
-  require("mason-lspconfig").setup({
+  local mason_lspconfig = require("mason-lspconfig")
+  mason_lspconfig.setup({
     ensure_installed = vim.tbl_keys(options.servers), -- Automatically install listed servers
   })
-
+  mason_lspconfig.setup_handlers({
+    function(server_name)
+      if server_name == "ts_ls" or server_name == "deno_ls" then
+        M.setup_typescript_lsp(capabilities)
+      else
+        local server_opts = vim.tbl_deep_extend("force", { capabilities = capabilities }, options.servers[server] or {})
+        if server_name.enabled then
+          nvim_lsp[server_name].setup(server_opts)
+        end
+      end
+    end,
+  })
   -- Setup each server
   for server_name, server_options in pairs(options.servers) do
     local server_config = vim.tbl_deep_extend("force", {
       capabilities = capabilities,
-      on_attach = function(client, buffer)
-        ByteVim.lsp_keymaps.setup_keymaps(client, buffer)
+      on_attach = function()
         if vim.fn.has("nvim-0.10") == 1 then
           -- Inlay hints
           if options.inlay_hints.enabled then

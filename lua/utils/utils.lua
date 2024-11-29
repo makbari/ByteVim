@@ -43,11 +43,10 @@ function M.merge(...)
   end
   return ret
 end
-function M.keymap(keys, func, desc, mode, opts, buffer)
+function M.keymap(keys, func, desc, mode, opts)
   local opts = M.merge({ silent = true, noremap = true }, opts or {})
   mode = mode or "n"
-  vim.keymap.set(mode, keys, func, { buffer = buffer or {}, desc = desc })
+  vim.keymap.set(mode, keys, func, { desc = desc })
 end
 
 return M
-
