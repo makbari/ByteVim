@@ -978,31 +978,22 @@ return {
   {
     "echasnovski/mini.move",
     event = "VeryLazy",
-    opts = {},
-    keys = function()
-      local ret = {}
-      local directions = { "left", "down", "up", "right" }
-      local keys = { "h", "j", "k", "l" }
-      local move = require("mini.move")
-      for i, dir in ipairs(directions) do
-        ret[#ret + 1] = {
-          "<A-" .. keys[i] .. ">",
-          mode = { "i", "n" },
-          function()
-            move.move_line(dir)
-          end,
-        }
-      end
-      for i, dir in ipairs(directions) do
-        ret[#ret + 1] = {
-          "<A-" .. keys[i] .. ">",
-          mode = { "v" },
-          function()
-            move.move_selection(dir)
-          end,
-        }
-      end
-      return ret
+    config = function()
+      require("mini.move").setup({
+        mappings = {
+          left = "<A-h>",
+          right = "<A-l>",
+          down = "<A-j>",
+          up = "<A-k>",
+          line_left = "<A-h>",
+          line_right = "<A-l>",
+          line_down = "<A-j>",
+          line_up = "<A-k>",
+        },
+        options = {
+          reindent_linewise = true,
+        },
+      })
     end,
   },
   -- auto pairs
