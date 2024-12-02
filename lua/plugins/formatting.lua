@@ -56,6 +56,7 @@ return {
           fish = { "fish_indent" },
           sh = { "shfmt" },
           typescript = { "prettier" },
+          typescriptreact = { "prettier" },
           javascript = { "prettier" },
           python = { "black" },
           markdown = { "prettier" },

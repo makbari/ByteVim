@@ -44,6 +44,7 @@ return {
         cssls = {},
         dockerls = {},
         terraformls = {},
+        prismals = {},
         jsonls = {},
         yamlls = {},
       },
