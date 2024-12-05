@@ -1,4 +1,5 @@
 vim.g.mapleader = " "
+vim.g.maplocalleader = ";"
 vim.opt.guicursor = "n-v-i-v:block-cursor"
 
 vim.opt.nu = true
@@ -26,6 +27,5 @@ vim.opt.termguicolors = true
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
 
-
-
 vim.opt.guifont = { "JetBrains Mono:h14" } -- Adjust the font size (h14) as required
+
