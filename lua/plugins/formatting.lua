@@ -61,6 +61,7 @@ return {
           python = { "black" },
           markdown = { "prettier" },
           rust = { "rustfmt" },
+          toml = { "taplo" },
         },
         formatters = {
           injected = { options = { ignore_errors = true } },
