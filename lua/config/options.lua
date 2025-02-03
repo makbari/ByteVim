@@ -26,6 +26,6 @@ vim.opt.termguicolors = true
 
 vim.opt.scrolloff = 8
 vim.opt.signcolumn = "yes"
+vim.cmd("language en_US")
 
 vim.opt.guifont = { "JetBrains Mono:h14" } -- Adjust the font size (h14) as required
-
