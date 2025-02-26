@@ -6,7 +6,6 @@ return {
     event = { "BufReadPost", "BufWritePost" },
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
     keys = {
-      { "<C-space>", desc = "Increment Selection" },
       { "<BS>", desc = "Decrement Selection", mode = "x" },
     },
     opts = {
@@ -26,12 +25,11 @@ return {
         "yaml",
         "typescript",
         "tsx",
+        "svelte",
       },
       incremental_selection = {
         enable = true,
         keymaps = {
-          init_selection = "<C-space>",
-          node_incremental = "<C-space>",
           node_decremental = "<BS>",
         },
       },

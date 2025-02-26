@@ -92,7 +92,6 @@ end
 function M.setup_typescript_lsp(capabilities)
   local server_opts = { capabilities = capabilities }
   local lspconfig = require("lspconfig")
-
   -- Check if it's a Deno project
   if M.deno_config_exist() then
     lspconfig.denols.setup(server_opts)
@@ -151,6 +150,7 @@ function M.setup(options)
     local server_config = vim.tbl_deep_extend("force", {
       capabilities = capabilities,
       on_attach = function()
+        print(vim.fn.has("nvim-0.10"))
         if vim.fn.has("nvim-0.10") == 1 then
           -- Inlay hints
           if options.inlay_hints.enabled then
@@ -158,8 +158,6 @@ function M.setup(options)
               callback = function(args)
                 local client = vim.lsp.get_client_by_id(args.data.client_id)
                 local buffer = args.buf
-
-                -- Ensure buffer is valid and not excluded
                 if
                   client
                   and vim.api.nvim_buf_is_valid(buffer)
@@ -167,14 +165,8 @@ function M.setup(options)
                   and not vim.tbl_contains(options.inlay_hints.exclude or {}, vim.bo[buffer].filetype)
                   and client.supports_method("textDocument/inlayHint")
                 then
-                  -- Check if inlay_hint is available and a function
-                  local inlay_hint_available, inlay_hint = pcall(function()
-                    return vim.lsp.inlay_hint
-                  end)
-
-                  if inlay_hint_available and type(inlay_hint) == "function" then
-                    -- Enable inlay hints
-                    inlay_hint(buffer, true)
+                  if vim.lsp.inlay_hint then
+                    vim.lsp.inlay_hint.enable(buffer, true)
                   end
                 end
               end,

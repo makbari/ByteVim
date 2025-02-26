@@ -62,6 +62,7 @@ return {
           markdown = { "prettier" },
           rust = { "rustfmt" },
           toml = { "taplo" },
+          svelte = { "prettier" },
         },
         formatters = {
           injected = { options = { ignore_errors = true } },
