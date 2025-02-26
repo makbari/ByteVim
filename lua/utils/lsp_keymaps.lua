@@ -17,7 +17,7 @@ function M.setup_keymaps()
       mode = "n",
       keys = "<leader>ih",
       func = function()
-        vim.lsp.inlay_hint(0, nil)
+        vim.lsp.inlay_hint.enable(true, nil)
       end,
       desc = "Toggle inlay hints",
     },
