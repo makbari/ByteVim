@@ -30,10 +30,6 @@ function M.bufpath(buf)
   return M.realpath(vim.api.nvim_buf_get_name(assert(buf)))
 end
 
-function M.cwd()
-  return M.realpath(vim.uv.cwd()) or ""
-end
-
 function M.realpath(path)
   if path == "" or path == nil then
     return nil
@@ -45,7 +41,8 @@ end
 function M.resolve(spec)
   if M.detectors[spec] then
     return M.detectors[spec]
-  elseif type(spec) == "function" then
+  end
+  if type(spec) == "function" then
     return spec
   end
   return function(buf)
@@ -55,9 +52,8 @@ end
 
 function M.detect(opts)
   opts = opts or {}
-  opts.spec = opts.spec or type(vim.g.root_spec) == "table" and vim.g.root_spec or M.spec
+  opts.spec = opts.spec or M.spec
   opts.buf = (opts.buf == nil or opts.buf == 0) and vim.api.nvim_get_current_buf() or opts.buf
-
   local ret = {}
   for _, spec in ipairs(opts.spec) do
     local paths = M.resolve(spec)(opts.buf)
@@ -102,65 +98,25 @@ end
 function M.git()
   local root = M.root()
   local git_root = vim.fs.find(".git", { path = root, upward = true })[1]
-  local ret = git_root and vim.fn.fnamemodify(git_root, ":h") or root
-  return ret
+  return git_root and vim.fn.fnamemodify(git_root, ":h") or root
 end
 
-function M.pretty_path()
-  return ""
-end
-
---- Check if current directory is a git repo
----@return boolean
 function M.is_git_repo()
   vim.fn.system("git rev-parse --is-inside-work-tree")
   return vim.v.shell_error == 0
 end
 
---- Get root directory of git project
----@return string|nil
 function M.get_git_root()
   return M.git()
 end
 
---- Get root directory of git project or fallback to current directory
----@return string|nil
 function M.get_root_directory()
-  if M.is_git_repo() then
-    return M.get_git_root()
-  end
-
-  return vim.fn.getcwd()
+  return M.is_git_repo() and M.get_git_root() or vim.fn.getcwd()
 end
--- Copy the current file path and line number to the clipboard, use GitHub URL if in a Git repository
-M.copyFilePathAndLineNumber = function()
-  local current_file = vim.fn.expand("%:p")
-  local current_line = vim.fn.line(".")
-  local is_git_repo = vim.fn.system("git rev-parse --is-inside-work-tree"):match("true")
 
-  if is_git_repo then
-    local current_repo = vim.fn.systemlist("git remote get-url origin")[1]
-    local current_branch = vim.fn.systemlist("git rev-parse --abbrev-ref HEAD")[1]
-
-    -- Convert Git URL to GitHub web URL format
-    current_repo = current_repo:gsub("git@github.com:", "https://github.com/")
-    current_repo = current_repo:gsub("%.git$", "")
-
-    -- Remove leading system path to repository root
-    local repo_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
-    if repo_root then
-      current_file = current_file:sub(#repo_root + 2)
-    end
-
-    local url = string.format("%s/blob/%s/%s#L%s", current_repo, current_branch, current_file, current_line)
-    vim.fn.setreg("+", url)
-    print("Copied to clipboard: " .. url)
-  else
-    -- If not in a Git directory, copy the full file path
-    vim.fn.setreg("+", current_file .. "#L" .. current_line)
-    print("Copied full path to clipboard: " .. current_file .. "#L" .. current_line)
-  end
+function M.deno_config_exist()
+  local root = M.get_root_directory()
+  return vim.fn.filereadable(root .. "/deno.json") == 1 or vim.fn.filereadable(root .. "/deno.jsonc") == 1
 end
 
 return M
-

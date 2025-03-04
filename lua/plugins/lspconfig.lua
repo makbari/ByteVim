@@ -1,7 +1,6 @@
 return {
+  -- Lazydev for Lua LSP
   {
-    -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-    -- used for completion, annotations and signatures of Neovim apis
     "folke/lazydev.nvim",
     ft = "lua",
     opts = {
@@ -11,55 +10,51 @@ return {
     },
   },
   { "Bilal2453/luvit-meta", lazy = true },
+
+  -- Mason for managing tools
   {
     "williamboman/mason.nvim",
     cmd = "Mason",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     opts = {
       ensure_installed = {
-        "docker-compose-language-service",
-        "json-lsp",
-        "stylua",
-        "shfmt",
-        "pyright",
-        "prisma-language-server",
+        "stylua", -- Lua formatter
+        "shfmt", -- Shell formatter
       },
     },
-    config = function(_, opts)
-      require("mason").setup(opts)
-      local mr = require("mason-registry")
-      for _, tool in ipairs(opts.ensure_installed) do
-        local pkg = mr.get_package(tool)
-        if not pkg:is_installed() then
-          pkg:install()
-        end
-      end
-    end,
   },
+
+  -- Mason-LSPConfig for automatic LSP setup
   {
     "williamboman/mason-lspconfig.nvim",
-    dependencies = { "neovim/nvim-lspconfig" },
-    keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
+    dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
     opts = {
       ensure_installed = {
-        "docker-compose-language-service",
-        "json-lsp",
-        "stylua",
-        "shfmt",
+        "lua_ls",
         "pyright",
+        "ruff",
+        "html",
+        "cssls",
+        "dockerls",
+        "terraformls",
+        "prismals",
+        "jsonls",
+        "yamlls",
+        "docker-compose-language-service",
+        "vue-language-server",
         "svelte",
-        "prisma-language-server",
+        "ts_ls",
       },
+      automatic_installation = true, -- Automatically install LSP servers
     },
-    config = function()
-      require("mason-lspconfig").setup()
-    end,
   },
+
+  -- LSPConfig for configuring LSP servers
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      { "williamboman/mason.nvim", config = true },
+      "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       { "j-hui/fidget.nvim", opts = {} },
       "hrsh7th/cmp-nvim-lsp",
@@ -90,11 +85,19 @@ return {
         prismals = {},
         jsonls = {},
         yamlls = {},
+        ["docker-compose-language-service"] = {},
+        ["vue-language-server"] = {},
+        svelte = {},
+        ts_ls = {},
       },
       inlay_hints = { enabled = true },
-      setup = {},
     },
     config = function(_, opts)
+      require("mason-lspconfig").setup_handlers({
+        function(server_name)
+          require("lspconfig")[server_name].setup(opts.servers[server_name] or {})
+        end,
+      })
       ByteVim.lsp.setup(opts)
       ByteVim.lsp_keymaps.setup_keymaps()
     end,

@@ -3,7 +3,7 @@ return {
     "neovim/nvim-lspconfig",
     opts = {
       servers = {
-        prismals = {
+        dockerls = {
           on_attach = function(client, bufnr)
             require("utils.lsp").on_attach(client, bufnr)
           end,

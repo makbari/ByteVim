@@ -1,10 +1,3 @@
-if vim.version().minor >= 11 then
-  vim.tbl_add_reverse_lookup = function(tbl)
-    for k, v in pairs(tbl) do
-      tbl[v] = k
-    end
-  end
-end
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -21,16 +14,26 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 vim.opt.rtp:prepend(lazypath)
+local enabled_extras = {
+  "javascript",
+  "typescript",
+  "rust",
+  "go",
+  "svelte",
+  "vue",
+  "docker",
+  "markdown",
+  "prisma",
+  "deno",
+}
+-- Generate plugin specs
+local spec = { { import = "plugins" } }
+for _, extra in ipairs(enabled_extras) do
+  table.insert(spec, { import = "plugins.extras." .. extra })
+end
 
 require("lazy").setup({
-  spec = {
-    { import = "plugins" },
-    { import = "plugins.extras.deno" },
-    { import = "plugins.extras.typescript" },
-    { import = "plugins.extras.rust" },
-    { import = "plugins.extras.prisma" },
-    { import = "plugins.extras.markdown" },
-  },
+  spec = spec,
   checker = {
     enabled = false,
   },

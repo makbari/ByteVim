@@ -9,16 +9,14 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
     },
-    opts = function()
-      vim.api.nvim_set_hl(0, "CmpGhostText", { link = "Comment", default = true })
+    config = function()
       local cmp = require("cmp")
-      local defaults = require("cmp.config.default")()
-      local auto_select = true
-      return {
-        completion = {
-          completeopt = "menu,menuone,noinsert" .. (auto_select and "" or ",noselect"),
+      cmp.setup({
+        sources = {
+          { name = "nvim_lsp" },
+          { name = "buffer" },
+          { name = "path" },
         },
-        preselect = auto_select and cmp.PreselectMode.Item or cmp.PreselectMode.None,
         mapping = cmp.mapping.preset.insert({
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
@@ -28,26 +26,7 @@ return {
           ["<CR>"] = cmp.mapping.confirm({ select = auto_select }), -- Confirm selection
           ["<C-e>"] = cmp.mapping.close(), -- Close completion menu
         }),
-        sources = cmp.config.sources({
-          { name = "nvim_lsp" }, -- LSP-based completions
-          { name = "path" }, -- Path completions
-        }, {
-          { name = "buffer" }, -- Buffer-based completions
-        }),
-        formatting = {
-          format = function(entry, item)
-            local icons = require("config.icons").kind -- Adjust based on your icon config
-            if icons[item.kind] then
-              item.kind = icons[item.kind] .. " " .. item.kind
-            end
-            return item
-          end,
-        },
-        experimental = {
-          ghost_text = true, -- Show ghost text in the completion menu
-        },
-        sorting = defaults.sorting,
-      }
+      })
     end,
   },
   -- Auto Pairs

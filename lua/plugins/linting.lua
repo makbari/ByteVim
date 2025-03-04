@@ -1,9 +1,8 @@
 return {
   {
     "mfussenegger/nvim-lint",
-    event = "VeryLazy",
     opts = {
-      events = { "BufWritePost" }, -- Only lint on save
+      events = { "BufWritePost" }, -- Lint on save
       linters_by_ft = {
         typescript = { "eslint" },
         typescriptreact = { "eslint" },
@@ -12,6 +11,7 @@ return {
         python = { "flake8" },
         markdown = { "markdownlint" },
         lua = { "luacheck" },
+        vue = { "eslint" },
       },
       linters = {
         eslint = {
@@ -28,38 +28,37 @@ return {
     config = function(_, opts)
       local lint = require("lint")
 
-      -- Extend existing linters
+      -- Apply custom linter configurations
       for name, linter in pairs(opts.linters) do
-        if type(linter) == "table" and type(lint.linters[name]) == "table" then
-          lint.linters[name] = vim.tbl_deep_extend("force", lint.linters[name], linter)
-        else
-          lint.linters[name] = linter
-        end
+        lint.linters[name] = type(lint.linters[name]) == "table"
+            and type(linter) == "table"
+            and vim.tbl_deep_extend("force", lint.linters[name], linter)
+          or linter
       end
       lint.linters_by_ft = opts.linters_by_ft
 
+      -- Debounce function to limit linting frequency
       local function debounce(ms, fn)
         local timer = vim.uv.new_timer()
         return function(...)
-          local argv = { ... }
+          local args = { ... }
           timer:start(ms, 0, function()
             timer:stop()
-            vim.schedule_wrap(fn)(unpack(argv))
+            vim.schedule_wrap(fn)(unpack(args))
           end)
         end
       end
 
-      -- Check if a linter executable exists
+      -- Check if linter executable exists
       local function is_executable(name)
         return vim.fn.executable(name) == 1
       end
 
-      -- Custom linting logic
+      -- Lint current file
       local function lint_files()
         local names = lint._resolve_linter_by_ft(vim.bo.filetype)
-        names = vim.list_extend({}, names) -- Copy table
         if #names == 0 then
-          vim.list_extend(names, lint.linters_by_ft["_"] or {})
+          names = lint.linters_by_ft["_"] or {}
         end
         vim.list_extend(names, lint.linters_by_ft["*"] or {})
 
@@ -77,7 +76,7 @@ return {
         end
       end
 
-      -- Set up autocommands to trigger linting
+      -- Trigger linting on specified events with debounce
       vim.api.nvim_create_autocmd(opts.events, {
         group = vim.api.nvim_create_augroup("ByteVimLint", { clear = true }),
         callback = debounce(150, lint_files),

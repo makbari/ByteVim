@@ -70,15 +70,6 @@ function M.eslint_config_exists()
 
   return false
 end
-function M.on_attach(on_attach)
-  vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function(args)
-      local buffer = args.buf ---@type number
-      local client = vim.lsp.get_client_by_id(args.data.client_id)
-      on_attach(client, buffer)
-    end,
-  })
-end
 ---@param fn fun()
 function M.on_very_lazy(fn)
   vim.api.nvim_create_autocmd("User", {
@@ -184,5 +175,10 @@ function M.setup(options)
     end
   end
 end
-
+function M.on_attach(client, bufnr)
+  require("utils.lsp_keymaps").setup_keymaps()
+  if client.server_capabilities.inlayHintProvider then
+    vim.lsp.inlay_hint.enable(bufnr, true)
+  end
+end
 return M
