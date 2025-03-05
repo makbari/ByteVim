@@ -1,3 +1,4 @@
+local lsp_utils = require("utils.lsp")
 return {
   -- Lazydev for Lua LSP
   {
@@ -33,6 +34,7 @@ return {
         "lua_ls",
         "pyright",
         "ruff",
+        "gopls",
         "html",
         "cssls",
         "dockerls",
@@ -40,8 +42,8 @@ return {
         "prismals",
         "jsonls",
         "yamlls",
-        "docker-compose-language-service",
-        "vue-language-server",
+        "docker_compose_language_service", -- Corrected name
+        "vuels",
         "svelte",
         "ts_ls",
       },
@@ -52,7 +54,7 @@ return {
   -- LSPConfig for configuring LSP servers
   {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
+    event = { "BufReadPre", "BufNewFile" }, -- Load LSP before opening files
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
@@ -85,21 +87,48 @@ return {
         prismals = {},
         jsonls = {},
         yamlls = {},
-        ["docker-compose-language-service"] = {},
-        ["vue-language-server"] = {},
+        docker_compose_language_service = {},
+        vuels = {},
         svelte = {},
         ts_ls = {},
       },
       inlay_hints = { enabled = true },
     },
     config = function(_, opts)
-      require("mason-lspconfig").setup_handlers({
+      local lspconfig = require("lspconfig")
+      local capabilities = require("cmp_nvim_lsp").default_capabilities()
+      local mason_lspconfig = require("mason-lspconfig")
+      -- Setup all servers
+      local options = vim.tbl_deep_extend("force", {
+        servers = {},
+        inlay_hints = { enabled = true },
+        setup = {},
+      }, opts or {})
+      mason_lspconfig.setup({
+        ensure_installed = vim.tbl_keys(options.servers), -- Automatically install listed servers
+        automatic_installation = true,
+      })
+      mason_lspconfig.setup_handlers({
         function(server_name)
-          require("lspconfig")[server_name].setup(opts.servers[server_name] or {})
+          if server_name == "ts_ls" or server_name == "denols" then
+            lsp_utils.setup_typescript_lsp(capabilities)
+          else
+            lspconfig[server_name].setup({
+              capabilities = capabilities,
+              on_attach = lsp_utils.on_attach,
+              root_dir = lspconfig.util.root_pattern(".git", vim.fn.getcwd()),
+            })
+          end
         end,
       })
-      ByteVim.lsp.setup(opts)
-      ByteVim.lsp_keymaps.setup_keymaps()
+
+      -- Initialize workspace for all servers at startup
+      for _, server_name in ipairs(options.servers) do
+        local config = lspconfig[server_name]
+        if config and config.manager then
+          config.manager.try_add(vim.fn.getcwd())
+        end
+      end
     end,
   },
 }
