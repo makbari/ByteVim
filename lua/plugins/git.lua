@@ -53,26 +53,39 @@ return {
     },
   },
   {
-    "pwntester/octo.nvim",
-    cmd = "Octo",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim",
-      "nvim-tree/nvim-web-devicons",
-    },
-    config = function()
-      require("octo").setup({
-        enable_builtin = true,
-        use_local_fs = true,
-      })
-      vim.cmd([[hi OctoEditable guibg=none]])
-      vim.treesitter.language.register("markdown", "octo")
+    "sindrets/diffview.nvim",
+    init = function()
+      vim.keymap.set("n", "<leader>dfv", function()
+        if next(require("diffview.lib").views) == nil then
+          vim.cmd("DiffviewOpen")
+        else
+          vim.cmd("DiffviewClose")
+        end
+      end, { desc = "Diffview | Toggle Diffview", silent = true })
     end,
-    keys = {
-      { "<leader>O", "<cmd>Octo<cr>", desc = "Octo" },
-      { "<leader>Op", "<cmd>Octo pr list<cr>", desc = "Octo pr list" },
-      { "<leader>Oi", "<cmd>Octo issue list<cr>", desc = "Octo issue list" },
-    },
+    event = "BufReadPost",
   },
+  -- {
+  --   "pwntester/octo.nvim",
+  --   cmd = "Octo",
+  --   dependencies = {
+  --     "nvim-lua/plenary.nvim",
+  --     "nvim-telescope/telescope.nvim",
+  --     "nvim-tree/nvim-web-devicons",
+  --   },
+  --   config = function()
+  --     require("octo").setup({
+  --       enable_builtin = true,
+  --       use_local_fs = true,
+  --     })
+  --     vim.cmd([[hi OctoEditable guibg=none]])
+  --     vim.treesitter.language.register("markdown", "octo")
+  --   end,
+  --   keys = {
+  --     { "<leader>O", "<cmd>Octo<cr>", desc = "Octo" },
+  --     { "<leader>Op", "<cmd>Octo pr list<cr>", desc = "Octo pr list" },
+  --     { "<leader>Oi", "<cmd>Octo issue list<cr>", desc = "Octo issue list" },
+  --   },
+  -- },
 }
 

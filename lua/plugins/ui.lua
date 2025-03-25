@@ -50,7 +50,6 @@ return {
       }
     end,
   },
-  -- Icons
   {
     "echasnovski/mini.icons",
     lazy = true,

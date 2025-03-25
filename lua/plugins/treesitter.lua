@@ -23,9 +23,9 @@ return {
         "python",
         "typescript",
         "yaml",
-        "typescript",
         "tsx",
         "svelte",
+        "rust",
       },
       incremental_selection = {
         enable = true,

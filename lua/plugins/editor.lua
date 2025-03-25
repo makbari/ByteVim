@@ -1,8 +1,8 @@
 return {
-  {
-    "MunifTanjim/nui.nvim",
-    lazy = true,
-  },
+  -- {
+  --   "MunifTanjim/nui.nvim",
+  --   lazy = true,
+  -- },
   {
     "nvim-neo-tree/neo-tree.nvim",
     dependencies = {
@@ -129,73 +129,6 @@ return {
     },
   },
   {
-    "folke/which-key.nvim",
-    event = "VeryLazy",
-    opts_extend = { "spec" },
-    opts = {
-      defaults = {},
-      spec = {
-        {
-          mode = { "n", "v" },
-          { "<leader><tab>", group = "tabs" },
-          { "<leader>c", group = "code" },
-          { "<leader>f", group = "file/find" },
-          { "<leader>g", group = "git" },
-          { "<leader>gh", group = "hunks" },
-          { "<leader>q", group = "quit/session" },
-          { "<leader>s", group = "search" },
-          { "<leader>u", group = "ui", icon = { icon = "󰙵 ", color = "cyan" } },
-          { "<leader>x", group = "diagnostics/quickfix", icon = { icon = "󱖫 ", color = "green" } },
-          { "[", group = "prev" },
-          { "]", group = "next" },
-          { "g", group = "goto" },
-          { "gs", group = "surround" },
-          { "z", group = "fold" },
-          {
-            "<leader>b",
-            group = "buffer",
-            expand = function()
-              return require("which-key.extras").expand.buf()
-            end,
-          },
-          {
-            "<leader>w",
-            group = "windows",
-            proxy = "<c-w>",
-            expand = function()
-              return require("which-key.extras").expand.win()
-            end,
-          },
-          -- better descriptions
-          { "gx", desc = "Open with system app" },
-        },
-      },
-    },
-    keys = {
-      {
-        "<leader>?",
-        function()
-          require("which-key").show({ global = false })
-        end,
-        desc = "Buffer Keymaps (which-key)",
-      },
-      {
-        "<c-w><space>",
-        function()
-          require("which-key").show({ keys = "<c-w>", loop = true })
-        end,
-        desc = "Window Hydra Mode (which-key)",
-      },
-    },
-    config = function(_, opts)
-      local wk = require("which-key")
-      wk.setup(opts)
-      if not vim.tbl_isempty(opts.defaults) then
-        wk.register(opts.defaults)
-      end
-    end,
-  },
-  {
     "f-person/git-blame.nvim",
     init = function()
       vim.keymap.set(
@@ -235,68 +168,6 @@ return {
       "GitBlameCopySHA",
     },
     opts = {},
-  },
-  {
-    "lewis6991/gitsigns.nvim",
-    opts = {
-      signs = {
-        add = { text = "▎" },
-        change = { text = "▎" },
-        delete = { text = "" },
-        topdelete = { text = "" },
-        changedelete = { text = "▎" },
-        untracked = { text = "▎" },
-      },
-      on_attach = function(buffer)
-        local gs = package.loaded.gitsigns
-
-        local function map(mode, l, r, desc)
-          vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc })
-        end
-
-        -- stylua: ignore start
-        map("n", "]h", function()
-          if vim.wo.diff then
-            vim.cmd.normal({ "]c", bang = true })
-          else
-            gs.nav_hunk("next")
-          end
-        end, "Next Hunk")
-        map("n", "[h", function()
-          if vim.wo.diff then
-            vim.cmd.normal({ "[c", bang = true })
-          else
-            gs.nav_hunk("prev")
-          end
-        end, "Prev Hunk")
-        map("n", "]H", function() gs.nav_hunk("last") end, "Last Hunk")
-        map("n", "[H", function() gs.nav_hunk("first") end, "First Hunk")
-        map({ "n", "v" }, "<leader>ghs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
-        map({ "n", "v" }, "<leader>ghr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
-        map("n", "<leader>ghS", gs.stage_buffer, "Stage Buffer")
-        map("n", "<leader>ghu", gs.undo_stage_hunk, "Undo Stage Hunk")
-        map("n", "<leader>ghR", gs.reset_buffer, "Reset Buffer")
-        map("n", "<leader>ghp", gs.preview_hunk_inline, "Preview Hunk Inline")
-        map("n", "<leader>ghb", function() gs.blame_line({ full = true }) end, "Blame Line")
-        map("n", "<leader>ghB", function() gs.blame() end, "Blame Buffer")
-        map("n", "<leader>ghd", gs.diffthis, "Diff This")
-        map("n", "<leader>ghD", function() gs.diffthis("~") end, "Diff This ~")
-        map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
-      end,
-    },
-  },
-  {
-    "sindrets/diffview.nvim",
-    init = function()
-      vim.keymap.set("n", "<leader>dfv", function()
-        if next(require("diffview.lib").views) == nil then
-          vim.cmd("DiffviewOpen")
-        else
-          vim.cmd("DiffviewClose")
-        end
-      end, { desc = "Diffview | Toggle Diffview", silent = true })
-    end,
-    event = "BufReadPost",
   },
   {
     "max397574/better-escape.nvim",
@@ -368,11 +239,7 @@ return {
     },
     config = function(_, options)
       local fzf_lua = require("fzf-lua")
-
-      -- Refer https://github.com/ibhagwan/fzf-lua/blob/main/lua/fzf-lua/defaults.lua#L69 for default keymaps
       fzf_lua.setup(options)
-
-      -- Automatic sizing of height/width of vim.ui.select
       fzf_lua.register_ui_select(function(_, items)
         local min_h, max_h = 0.60, 0.80
         local h = (#items + 4) / vim.o.lines
@@ -499,47 +366,6 @@ return {
       { "<leader>sh", "<cmd> :FzfLua help_tags<CR>", desc = "Search Help" },
       { "<leader>sq", "<cmd> :FzfLua quickfix<CR>", desc = "Search Quickfix" },
     },
-  },
-  {
-    "f-person/git-blame.nvim",
-    init = function()
-      vim.keymap.set(
-        "n",
-        "<leader>gB",
-        "<cmd>GitBlameOpenCommitURL<cr>",
-        { desc = "GitBlame | Open Commit Url", silent = true }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>gc",
-        "<cmd>GitBlameCopyCommitURL<cr>",
-        { desc = "GitBlame | Copy Commit Url", silent = true }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>gf",
-        "<cmd>GitBlameOpenFileURL<cr>",
-        { desc = "GitBlame | Open File Url", silent = true }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>gC",
-        "<cmd>GitBlameCopyFileURL<cr>",
-        { desc = "GitBlame | Copy File Url", silent = true }
-      )
-      vim.keymap.set("n", "<leader>gs", "<cmd>GitBlameCopySHA<cr>", { desc = "GitBlame | Copy SHA", silent = true })
-      vim.keymap.set("n", "<leader>gt", "<cmd>GitBlameToggle<cr>", { desc = "GitBlame | Toggle Blame", silent = true })
-    end,
-    cmd = {
-      "GitBlameToggle",
-      "GitBlameEnable",
-      "GitBlameOpenCommitURL",
-      "GitBlameCopyCommitURL",
-      "GitBlameOpenFileURL",
-      "GitBlameCopyFileURL",
-      "GitBlameCopySHA",
-    },
-    opts = {},
   },
   {
     "rmagatti/goto-preview",
@@ -919,12 +745,6 @@ return {
     end,
   },
   {
-    "szw/vim-maximizer",
-    keys = {
-      { "<leader>sm", "<cmd>MaximizerToggle<CR>", desc = "Maximize/minimize a split" },
-    },
-  },
-  {
     "folke/zen-mode.nvim",
     config = function()
       vim.keymap.set("n", "<leader>zz", function()
@@ -979,47 +799,5 @@ return {
       },
     },
   },
-  {
-    "echasnovski/mini.move",
-    event = "VeryLazy",
-    config = function()
-      require("mini.move").setup({
-        mappings = {
-          left = "<A-h>",
-          right = "<A-l>",
-          down = "<A-j>",
-          up = "<A-k>",
-          line_left = "<A-h>",
-          line_right = "<A-l>",
-          line_down = "<A-j>",
-          line_up = "<A-k>",
-        },
-        options = {
-          reindent_linewise = true,
-        },
-      })
-    end,
-  },
-  -- auto pairs
-  {
-    "echasnovski/mini.pairs",
-    opts = {
-      mappings = {
-        ["`"] = { action = "closeopen", pair = "``", neigh_pattern = "[^\\`].", register = { cr = false } },
-      },
-    },
-    keys = {
-      {
-        "<leader>up",
-        function()
-          vim.g.minipairs_disable = not vim.g.minipairs_disable
-        end,
-        desc = "Toggle Auto Pairs",
-      },
-    },
-  },
-  {
-    "echasnovski/mini.surround",
-    opts = {},
-  },
+
 }
