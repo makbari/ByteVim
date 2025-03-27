@@ -37,8 +37,12 @@ end
 
 function M.eslint_config_exists()
   local config_files = {
-    ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.yaml",
-    ".eslintrc.yml", ".eslintrc.json", ".eslintrc"
+    ".eslintrc.js",
+    ".eslintrc.cjs",
+    ".eslintrc.yaml",
+    ".eslintrc.yml",
+    ".eslintrc.json",
+    ".eslintrc",
   }
 
   local check_paths = { vim.fn.getcwd() }
@@ -91,10 +95,10 @@ function M.setup(options)
   for server_name, server_opts in pairs(options.servers) do
     local server_config = vim.tbl_deep_extend("force", {
       capabilities = capabilities,
-      on_attach = function(client, bufnr)
+      on_attach = function(client)
         if vim.fn.has("nvim-0.10") == 1 and options.inlay_hints.enabled then
           if client.supports_method("textDocument/inlayHint") then
-            vim.lsp.inlay_hint.enable(bufnr, true)
+            vim.lsp.inlay_hint.enable(true)
           end
         end
       end,
