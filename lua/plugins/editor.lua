@@ -801,7 +801,11 @@ return {
   },
   {
     "kevinhwang91/nvim-ufo",
-    dependencies = { "kevinhwang91/promise-async" },
+    event = "BufReadPost",
+    dependencies = {
+      "kevinhwang91/promise-async",
+      "nvim-treesitter/nvim-treesitter", -- Required for treesitter provider
+    },
     config = function()
       vim.o.foldcolumn = "1"
       vim.o.foldlevel = 99
