@@ -63,6 +63,7 @@ return {
           rust = { "rustfmt" },
           toml = { "taplo" },
           svelte = { "prettier" },
+          go = { "gofmt" }, -- Add this
         },
         formatters = {
           injected = { options = { ignore_errors = true } },

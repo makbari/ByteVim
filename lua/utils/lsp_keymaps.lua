@@ -1,11 +1,46 @@
 local M = {}
 function M.setup_keymaps()
   local keymaps = {
-    { mode = "n", keys = "gd", func = vim.lsp.buf.definition, desc = "Go to definition" },
-    { mode = "n", keys = "gD", func = vim.lsp.buf.declaration, desc = "Go to declaration" },
-    { mode = "n", keys = "gi", func = vim.lsp.buf.implementation, desc = "Go to implementation" },
-    { mode = "n", keys = "gr", func = vim.lsp.buf.references, desc = "List references" },
-    { mode = "n", keys = "gt", func = vim.lsp.buf.type_definition, desc = "Go to type definition" },
+    {
+      mode = "n",
+      keys = "gd",
+      func = function()
+        require("telescope.builtin").lsp_definitions()
+      end,
+      desc = "Go to definition",
+    },
+    {
+      mode = "n",
+      keys = "gD",
+      func = function()
+        require("telescope.builtin").lsp_declarations()
+      end,
+      desc = "Go to declaration",
+    },
+    {
+      mode = "n",
+      keys = "gi",
+      func = function()
+        require("telescope.builtin").lsp_implementations()
+      end,
+      desc = "Go to implementation",
+    },
+    {
+      mode = "n",
+      keys = "gr",
+      func = function()
+        require("telescope.builtin").lsp_references()
+      end,
+      desc = "List references",
+    },
+    {
+      mode = "n",
+      keys = "gt",
+      func = function()
+        require("telescope.builtin").lsp_type_definitions()
+      end,
+      desc = "Go to type definition",
+    },
     { mode = "n", keys = "K", func = vim.lsp.buf.hover, desc = "Show documentation" },
     { mode = "n", keys = "<leader>sh", func = vim.lsp.buf.signature_help, desc = "Show signature help" },
     { mode = "n", keys = "<leader>ca", func = vim.lsp.buf.code_action, desc = "Code action" },
@@ -28,18 +63,23 @@ function M.setup_keymaps()
     ByteVim.utils.keymap(keymap.keys, keymap.func, keymap.desc, keymap.mode, nil)
   end
 
-  local fzf_lua = require("fzf-lua")
+  local telescope = require("telescope.builtin")
+  local function telescope_handler(handler)
+    return function(err, result, ctx, config)
+      handler(vim.tbl_extend("force", ctx, { jump_type = "never" }))
+    end
+  end
 
-  vim.lsp.handlers["textDocument/codeAction"] = fzf_lua.lsp_code_actions
-  vim.lsp.handlers["textDocument/definition"] = fzf_lua.lsp_definitions
-  vim.lsp.handlers["textDocument/declaration"] = fzf_lua.lsp_declarations
-  vim.lsp.handlers["textDocument/typeDefinition"] = fzf_lua.lsp_typedefs
-  vim.lsp.handlers["textDocument/implementation"] = fzf_lua.lsp_implementations
-  vim.lsp.handlers["textDocument/references"] = fzf_lua.lsp_references
-  vim.lsp.handlers["textDocument/documentSymbol"] = fzf_lua.lsp_document_symbols
-  vim.lsp.handlers["workspace/symbol"] = fzf_lua.lsp_workspace_symbols
-  vim.lsp.handlers["callHierarchy/incomingCalls"] = fzf_lua.lsp_incoming_calls
-  vim.lsp.handlers["callHierarchy/outgoingCalls"] = fzf_lua.lsp_outgoing_calls
+  vim.lsp.handlers["textDocument/codeAction"] = telescope_handler(telescope.lsp_code_actions)
+  vim.lsp.handlers["textDocument/definition"] = telescope_handler(telescope.lsp_definitions)
+  vim.lsp.handlers["textDocument/declaration"] = telescope_handler(telescope.lsp_declarations)
+  vim.lsp.handlers["textDocument/typeDefinition"] = telescope_handler(telescope.lsp_type_definitions)
+  vim.lsp.handlers["textDocument/implementation"] = telescope_handler(telescope.lsp_implementations)
+  vim.lsp.handlers["textDocument/references"] = telescope_handler(telescope.lsp_references)
+  vim.lsp.handlers["textDocument/documentSymbol"] = telescope_handler(telescope.lsp_document_symbols)
+  vim.lsp.handlers["workspace/symbol"] = telescope_handler(telescope.lsp_workspace_symbols)
+  vim.lsp.handlers["callHierarchy/incomingCalls"] = telescope_handler(telescope.lsp_incoming_calls)
+  vim.lsp.handlers["callHierarchy/outgoingCalls"] = telescope_handler(telescope.lsp_outgoing_calls)
 end
 
 return M

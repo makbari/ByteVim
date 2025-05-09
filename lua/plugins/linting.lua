@@ -12,6 +12,7 @@ return {
         python = { "flake8" },
         markdown = { "markdownlint" },
         lua = { "luacheck" },
+        go = { "golangcilint" }, -- Add this
       },
       linters = {
         eslint = {

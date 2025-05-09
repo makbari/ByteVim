@@ -11,6 +11,7 @@ return {
     opts = {
       highlight = { enable = true },
       indent = { enable = true },
+      matchup = { enable = true },
       auto_install = true,
       ensure_installed = {
         "bash",
@@ -26,6 +27,7 @@ return {
         "tsx",
         "svelte",
         "rust",
+        "go",
       },
       incremental_selection = {
         enable = true,
@@ -34,27 +36,40 @@ return {
         },
       },
       textobjects = {
+        select = {
+          enable = true,
+          lookahead = true,
+
+          keymaps = {
+            ["<leader>at"] = { query = "@tag.outer", desc = "Select around JSX tag" },
+            ["<leader>it"] = { query = "@tag.inner", desc = "Select inside JSX tag" },
+          },
+        },
         move = {
           enable = true,
           goto_next_start = {
             ["]f"] = "@function.outer",
             ["]c"] = "@class.outer",
             ["]a"] = "@parameter.inner",
+            ["]t"] = "@tag.outer", -- JSX/HTML tag
           },
           goto_next_end = {
             ["]F"] = "@function.outer",
             ["]C"] = "@class.outer",
             ["]A"] = "@parameter.inner",
+            ["]T"] = "@tag.outer", -- JSX/HTML tag
           },
           goto_previous_start = {
             ["[f"] = "@function.outer",
             ["[c"] = "@class.outer",
             ["[a"] = "@parameter.inner",
+            ["[t"] = "@tag.outer", -- JSX/HTML tag
           },
           goto_previous_end = {
             ["[F"] = "@function.outer",
             ["[C"] = "@class.outer",
             ["[A"] = "@parameter.inner",
+            ["[T"] = "@tag.outer", -- JSX/HTML tag
           },
         },
       },

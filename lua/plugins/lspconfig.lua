@@ -17,6 +17,8 @@ return {
         "cssls",
         "html",
         "prismals",
+        "vue-language-server",
+        "gopls",
       },
     },
     config = function()

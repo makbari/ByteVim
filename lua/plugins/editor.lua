@@ -10,14 +10,14 @@ return {
       "nvim-tree/nvim-web-devicons",
       "MunifTanjim/nui.nvim",
     },
-    event = "VeryLazy",
+    event = "bufenter",
     keys = {
       { "<leader>er", ":Neotree reveal float<CR>", silent = true, desc = "Reveal Float File Explorer" },
       { "<leader><Tab>", ":Neotree toggle left<CR>", silent = true, desc = "Left File Explorer" },
     },
     config = function()
       require("neo-tree").setup({
-        close_if_last_window = true,
+        close_if_last_window = false,
         popup_border_style = "single",
         enable_git_status = true,
         enable_modified_markers = true,
@@ -62,6 +62,7 @@ return {
           follow_current_file = {
             enabled = true,
           },
+          bind_to_cw = false,
           use_libuv_file_watcher = true,
           group_empty_dirs = true,
           filtered_items = {
@@ -175,208 +176,173 @@ return {
     config = true,
   },
   {
-    "ibhagwan/fzf-lua",
-    dependencies = { "nvim-tree/nvim-web-devicons", "neovim/nvim-lspconfig" },
-    opts = {
-      hls = {
-        border = "FloatBorder",
-        cursorline = "Visual",
-        cursorlinenr = "Visual",
-      },
-      fzf_opts = {
-        ["--history"] = vim.fn.stdpath("data") .. "/fzf-lua-history",
-        ["--info"] = false,
-        ["--border"] = false,
-        ["--preview-window"] = false,
-      },
-      winopts = {
-        height = 0.85,
-        width = 0.80,
-        row = 0.35,
-        col = 0.55,
-        preview = {
-          layout = "flex",
-          flip_columns = 130,
-          scrollbar = "float",
-        },
-      },
-      files = {
-        multiprocess = true,
-        git_icons = false,
-        file_icons = false,
-      },
-      grep = {
-        multiprocess = true,
-      },
-      git = {
-        files = {
-          multiprocess = true,
-        },
-        status = {
-          winopts = {
-            preview = { vertical = "down:70%", horizontal = "right:70%" },
-          },
-        },
-        commits = { winopts = { preview = { vertical = "down:60%" } } },
-        bcommits = { winopts = { preview = { vertical = "down:60%" } } },
-        branches = {
-          winopts = {
-            preview = { vertical = "down:75%", horizontal = "right:75%" },
-          },
-        },
-      },
-      lsp = {
-        async_or_timeout = true,
-        symbols = {
-          path_shorten = 1,
-        },
-        code_actions = {
-          winopts = {
-            preview = { layout = "reverse-list", horizontal = "right:75%" },
-          },
-        },
-      },
+    "nvim-telescope/telescope.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons",
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
     },
-    config = function(_, options)
-      local fzf_lua = require("fzf-lua")
-      fzf_lua.setup(options)
-      fzf_lua.register_ui_select(function(_, items)
-        local min_h, max_h = 0.60, 0.80
-        local h = (#items + 4) / vim.o.lines
-        if h < min_h then
-          h = min_h
-        elseif h > max_h then
-          h = max_h
-        end
-        return { winopts = { height = h, width = 0.80, row = 0.40 } }
-      end)
-    end,
+    cmd = "Telescope",
     keys = {
-      { "<C-g>", "<cmd> :FzfLua grep_project<CR>", desc = "Find Grep" },
+      { "<C-g>", "<cmd>Telescope live_grep<CR>", desc = "Live Grep" },
       {
         "<C-g>",
         function()
-          local root_dir = ByteVim.path.root()
-          local fzf_lua = require("fzf-lua")
-          fzf_lua.setup({
-            grep = {
-              actions = { ["ctrl-r"] = { fzf_lua.actions.toggle_ignore } },
-            },
-          })
-
-          fzf_lua.grep_visual({
-            cwd = root_dir,
-            rg_opts = "--column --hidden --smart-case --color=always --no-heading --line-number -g '!{.git,node_modules}/'",
-            multiprocess = true,
-          })
+          require("telescope.builtin").live_grep({ default_text = vim.fn.getreg('"') })
         end,
-        desc = "Search Grep in visual selection",
         mode = "v",
+        desc = "Grep Visual Selection",
       },
       {
         "<leader>sw",
         function()
-          local root_dir = ByteVim.path.git()
-          local fzf_lua = require("fzf-lua")
-          fzf_lua.setup({
-            grep = {
-              actions = { ["ctrl-r"] = { fzf_lua.actions.toggle_ignore } },
-            },
-          })
-
-          fzf_lua.grep_visual({
-            cwd = root_dir,
-            rg_opts = "--column --hidden --smart-case --color=always --no-heading --line-number -g '!{.git,node_modules}/'",
-            multiprocess = true,
+          require("telescope.builtin").live_grep({
+            default_text = vim.fn.getreg('"'),
+            cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1],
           })
         end,
-        desc = "Search word in visual selection (git root)",
         mode = "v",
+        desc = "Grep Visual Selection (Git Root)",
       },
       {
         "<leader>fr",
         function()
-          local root_dir = ByteVim.path.git()
-          require("fzf-lua").oldfiles({ cwd = root_dir })
+          require("telescope.builtin").oldfiles({
+            cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1],
+          })
         end,
         desc = "Find Recent Files",
       },
       {
         "<leader>/",
         function()
-          local root_dir = ByteVim.path.root()
-          require("fzf-lua").live_grep({ cwd = root_dir, multiprocess = true })
+          require("telescope.builtin").live_grep()
         end,
-        desc = "Grep Files at current directory",
+        desc = "Grep Files at Current Directory",
       },
       {
         "<leader>ff",
         function()
-          local root_dir = ByteVim.path.git()
-          require("fzf-lua").git_files({ cwd = root_dir })
+          require("telescope.builtin").git_files({
+            cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1],
+          })
         end,
         desc = "Find Git Files",
       },
       {
         "<leader>fc",
         function()
-          require("fzf-lua").files({ cwd = "~/.config/nvim" })
+          require("telescope.builtin").find_files({ cwd = "~/.config/nvim" })
         end,
         desc = "Find Neovim Configs",
       },
-      { "<leader>sb", "<cmd> :FzfLua grep_curbuf<CR>", desc = "Search Current Buffer" },
-      { "<leader>sB", "<cmd> :FzfLua lines<CR>", desc = "Search Lines in Open Buffers" },
+      { "<leader>sb", "<cmd>Telescope current_buffer_fuzzy_find<CR>", desc = "Search Current Buffer" },
+      { "<leader>sB", "<cmd>Telescope buffers<CR>", desc = "Search Open Buffers" },
       {
         "<leader>sw",
         function()
-          local root_dir = ByteVim.path.git()
-          require("fzf-lua").grep_cword({ cwd = root_dir, multiprocess = true })
+          require("telescope.builtin").grep_string({
+            cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1],
+          })
         end,
-        desc = "Search word under cursor (git root)",
+        desc = "Search Word Under Cursor (Git Root)",
       },
       {
         "<leader>sW",
         function()
-          local root_dir = ByteVim.path.git()
-          require("fzf-lua").grep_cWORD({ cwd = root_dir, multiprocess = true })
+          require("telescope.builtin").grep_string({
+            cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1],
+            word_match = "-w",
+          })
         end,
-        desc = "Search WORD under cursor (git root)",
+        desc = "Search WORD Under Cursor (Git Root)",
       },
       {
         "<leader>gs",
         function()
-          local root_dir = ByteVim.path.git()
-          require("fzf-lua").git_status({ cwd = root_dir })
+          require("telescope.builtin").git_status({
+            cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1],
+          })
         end,
         desc = "Git Status",
       },
-      { "<leader>gc", "<cmd> :FzfLua git_commits<CR>", desc = "Git Commits" },
-      { "<leader>gb", "<cmd> :FzfLua git_branches<CR>", desc = "Git Branches" },
-      { "<leader>gB", "<cmd> :FzfLua git_bcommits<CR>", desc = "Git Buffer Commits" },
-      { "<leader>sa", "<cmd> :FzfLua commands<CR>", desc = "Find Actions" },
-      { "<leader>s:", "<cmd> :FzfLua command_history<CR>", desc = "Find Command History" },
-      { "<leader>ss", "<cmd> :FzfLua lsp_document_symbols<CR>", desc = "LSP Document Symbols" },
-      { "<leader>sS", "<cmd> :FzfLua lsp_workspace_symbols<CR>", desc = "LSP Workspace Symbols" },
-      { "<leader>si", "<cmd> :FzfLua lsp_incoming_calls<CR>", desc = "LSP Incoming Calls" },
-      { "<leader>so", "<cmd> :FzfLua lsp_outgoing_calls<CR>", desc = "LSP Outgoing Calls" },
-      { "<leader>sk", "<cmd> :FzfLua keymaps<CR>", desc = "Search Keymaps" },
-      { "<leader>sm", "<cmd> :FzfLua marks<CR>", desc = "Search Marks" },
-      { "<leader>st", "<cmd> :FzfLua tmux_buffers<CR>", desc = "Search Tmux buffers" },
-      { "<leader>sc", "<cmd> :FzfLua colorschemes<CR>", desc = "Search colorschemes" },
-      { "<leader>sh", "<cmd> :FzfLua help_tags<CR>", desc = "Search Help" },
-      { "<leader>sq", "<cmd> :FzfLua quickfix<CR>", desc = "Search Quickfix" },
+      { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "Git Commits" },
+      { "<leader>gb", "<cmd>Telescope git_branches<CR>", desc = "Git Branches" },
+      { "<leader>gB", "<cmd>Telescope git_bcommits<CR>", desc = "Git Buffer Commits" },
+      { "<leader>sa", "<cmd>Telescope commands<CR>", desc = "Find Actions" },
+      { "<leader>s:", "<cmd>Telescope command_history<CR>", desc = "Find Command History" },
+      { "<leader>ss", "<cmd>Telescope lsp_document_symbols<CR>", desc = "LSP Document Symbols" },
+      { "<leader>sS", "<cmd>Telescope lsp_workspace_symbols<CR>", desc = "LSP Workspace Symbols" },
+      { "<leader>si", "<cmd>Telescope lsp_incoming_calls<CR>", desc = "LSP Incoming Calls" },
+      { "<leader>so", "<cmd>Telescope lsp_outgoing_calls<CR>", desc = "LSP Outgoing Calls" },
+      { "<leader>sk", "<cmd>Telescope keymaps<CR>", desc = "Search Keymaps" },
+      { "<leader>sm", "<cmd>Telescope marks<CR>", desc = "Search Marks" },
+      { "<leader>sc", "<cmd>Telescope colorscheme<CR>", desc = "Search Colorschemes" },
+      { "<leader>sh", "<cmd>Telescope help_tags<CR>", desc = "Search Help" },
+      { "<leader>sq", "<cmd>Telescope quickfix<CR>", desc = "Search Quickfix" },
     },
+    opts = {
+      defaults = {
+        vimgrep_arguments = {
+          "rg",
+          "--color=never",
+          "--no-heading",
+          "--with-filename",
+          "--line-number",
+          "--column",
+          "--smart-case",
+          "--hidden",
+          "--glob",
+          "!{.git,node_modules}",
+        },
+        prompt_prefix = " ",
+        selection_caret = "➜ ",
+        layout_strategy = "horizontal",
+        layout_config = {
+          height = 0.85,
+          width = 0.80,
+          prompt_position = "top",
+          preview_cutoff = 120,
+        },
+        sorting_strategy = "ascending",
+        file_ignore_patterns = { ".git/", "node_modules/" },
+      },
+      pickers = {
+        find_files = {
+          hidden = true,
+          no_ignore = false,
+        },
+        live_grep = {
+          additional_args = { "--hidden" },
+        },
+        git_files = {
+          show_untracked = true,
+        },
+      },
+      extensions = {
+        fzf = {
+          fuzzy = true,
+          override_generic_sorter = true,
+          override_file_sorter = true,
+          case_mode = "smart_case",
+        },
+      },
+    },
+    config = function(_, opts)
+      local telescope = require("telescope")
+      telescope.setup(opts)
+      telescope.load_extension("fzf")
+    end,
   },
   {
     "rmagatti/goto-preview",
+    event = "BufEnter",
+    dependencies = { "rmagatti/logger.nvim" },
     config = function()
       require("goto-preview").setup({
         width = 120, -- Width of the floating window
         height = 25, -- Height of the floating window
         default_mappings = true, -- Enable/disable default key mappings
-        post_open_hook = nil, -- A function taking two arguments, a buffer and a window to be ran as a hook.
-        debug = false, -- Print debug information
-        opacity = nil, -- Set opacity to 80%
       })
     end,
   },

@@ -25,7 +25,7 @@ return {
           ["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
           ["<C-p>"] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
           ["<C-a>"] = cmp.mapping.complete(), -- Manually trigger completion menu
-          ["<CR>"] = cmp.mapping.confirm({ select = auto_select }), -- Confirm selection
+          ["<CR>"] = cmp.mapping.confirm({ select = auto_select, behavior = cmp.ConfirmBehavior.Replace }), -- Confirm selection
           ["<C-e>"] = cmp.mapping.close(), -- Close completion menu
         }),
         sources = cmp.config.sources({
@@ -96,7 +96,6 @@ return {
     -- better code annotation
     {
       "danymat/neogen",
-      enabled = false,
       dependencies = {
         "nvim-treesitter/nvim-treesitter",
         "L3MON4D3/LuaSnip",
