@@ -8,6 +8,9 @@ return {
       require("deno-nvim").setup({
         server = {
           capabilities = require("cmp_nvim_lsp").default_capabilities(),
+          on_attach = function(client, bufnr)
+            ByteVim.lsp.stop_lsp_client_by_name("ts_ls")
+          end,
           settings = {
             deno = {
               inlayHints = {

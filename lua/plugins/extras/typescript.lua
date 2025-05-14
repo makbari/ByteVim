@@ -2,9 +2,16 @@ return {
   {
     "pmizio/typescript-tools.nvim",
     cond = function()
-      return ByteVim.lsp.get_config_path("package.json") ~= nil
+      return ByteVim.lsp.get_config_path("package.json") ~= nil and not ByteVim.lsp.deno_config_exist()
     end,
     opts = {
+      on_attach = function(client, bfr)
+        if ByteVim.lsp.deno_config_exist() then
+          ByteVim.lsp.stop_lsp_client_by_name("ts_ls")
+          client.stop()
+          return false
+        end
+      end,
       settings = {
         tsserver_file_preferences = {
           includeInlayParameterNameHints = "literals",
