@@ -175,6 +175,7 @@ return {
     event = "InsertEnter",
     config = true,
   },
+  { "nvim-telescope/telescope-ui-select.nvim" },
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {
@@ -332,6 +333,7 @@ return {
       local telescope = require("telescope")
       telescope.setup(opts)
       telescope.load_extension("fzf")
+      telescope.load_extension("ui-select")
     end,
   },
   {

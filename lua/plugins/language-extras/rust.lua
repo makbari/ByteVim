@@ -1,12 +1,4 @@
 return {
-  -- Extend auto completion
-  {
-    "hrsh7th/nvim-cmp",
-    opts = function(_, opts)
-      opts.sources = opts.sources or {}
-      table.insert(opts.sources, { name = "crates" })
-    end,
-  },
   {
     "Saecki/crates.nvim",
     tag = "stable",
@@ -88,18 +80,6 @@ return {
     end,
   },
 
-  -- Add Rust & related to treesitter
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = { ensure_installed = { "rust", "ron" } },
-  },
-
-  {
-    "williamboman/mason.nvim",
-    optional = true,
-    opts = { ensure_installed = { "codelldb" } },
-  },
-
   {
     "mrcjkb/rustaceanvim",
     version = "^5",
@@ -142,9 +122,6 @@ return {
       vim.g.rustaceanvim = vim.tbl_deep_extend("keep", vim.g.rustaceanvim or {}, opts or {})
     end,
   },
-
-  -- Correctly setup lspconfig for Rust 🚀
-
   {
     "nvim-neotest/neotest",
     optional = true,

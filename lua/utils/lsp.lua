@@ -24,17 +24,17 @@ function M.stop_lsp_client_by_name(name)
   for _, client in ipairs(vim.lsp.get_active_clients()) do
     if client.name == name then
       vim.lsp.stop_client(client.id, true)
-      vim.notify("Stopped LSP client: " .. name)
       return
     end
   end
-  vim.notify("No active LSP client with name: " .. name)
 end
 
 function M.deno_config_exist()
   return M.get_config_path("deno.json") ~= nil or M.get_config_path("deno.jsonc") ~= nil
 end
-
+function M.node_config_exist()
+  return M.get_config_path("package.json") ~= nil
+end
 function M.eslint_config_exists()
   local config_files = {
     ".eslintrc.js",
