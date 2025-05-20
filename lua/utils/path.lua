@@ -106,19 +106,13 @@ function M.git()
   return ret
 end
 
---- Check if current directory is a git repo
----@return boolean
 function M.is_git_repo()
   vim.fn.system("git rev-parse --is-inside-work-tree")
   return vim.v.shell_error == 0
 end
 
---- Get root directory of git project
----@return string|nil
 function M.get_git_root()
   return M.git()
 end
 
-
 return M
-
