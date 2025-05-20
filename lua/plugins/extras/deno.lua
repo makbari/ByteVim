@@ -9,7 +9,7 @@ return {
         server = {
           capabilities = require("cmp_nvim_lsp").default_capabilities(),
           on_attach = function(client, bufnr)
-            ByteVim.lsp.stop_lsp_client_by_name("ts_ls")
+            ByteVim.lsp.stop_lsp_client_by_name("vtsls")
           end,
           settings = {
             deno = {
@@ -28,3 +28,4 @@ return {
     end,
   },
 }
+

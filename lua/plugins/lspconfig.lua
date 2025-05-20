@@ -1,12 +1,12 @@
 return {
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     cmd = "Mason",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     config = true,
   },
   {
-    "williamboman/mason-lspconfig.nvim",
+    "mason-org/mason-lspconfig.nvim",
     dependencies = { "neovim/nvim-lspconfig" },
     opts = {
       ensure_installed = {
@@ -17,20 +17,19 @@ return {
         "cssls",
         "html",
         "prismals",
-        "vue-language-server",
+        "volar",
         "gopls",
       },
     },
-    config = function()
-      require("mason-lspconfig").setup()
-    end,
+    handlers = {}, -- Disable automatic setup by setting handlers to an empty table
   },
   {
     "neovim/nvim-lspconfig",
-    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      { "williamboman/mason.nvim", config = true },
-      "williamboman/mason-lspconfig.nvim",
+      dependencies = {
+        "mason.nvim",
+        { "mason-org/mason-lspconfig.nvim", config = function() end },
+      },
       { "j-hui/fidget.nvim", opts = {} },
       "hrsh7th/cmp-nvim-lsp",
     },
@@ -63,6 +62,15 @@ return {
     config = function(_, opts)
       ByteVim.lsp.setup(opts)
       ByteVim.lsp_keymaps.setup_keymaps()
+      local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+      ByteVim.lsp.disable("vtsls", is_deno)
+      ByteVim.lsp.disable("denols", function(root_dir, config)
+        if not is_deno(root_dir) then
+          config.settings.deno.enable = false
+        end
+        return false
+      end)
     end,
   },
 }
+

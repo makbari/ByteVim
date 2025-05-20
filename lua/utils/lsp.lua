@@ -24,11 +24,9 @@ function M.stop_lsp_client_by_name(name)
   for _, client in ipairs(vim.lsp.get_active_clients()) do
     if client.name == name then
       vim.lsp.stop_client(client.id, true)
-      vim.notify("Stopped LSP client: " .. name)
       return
     end
   end
-  vim.notify("No active LSP client with name: " .. name)
 end
 
 function M.deno_config_exist()
@@ -72,7 +70,28 @@ function M.on_attach(on_attach_fn)
     end,
   })
 end
-
+function M.is_enabled(server)
+  local c = M.get_config(server)
+  return c and c.enabled ~= false
+end
+function M.get_config(server)
+  local configs = require("lspconfig.configs")
+  return rawget(configs, server)
+end
+function M.disable(server, cond)
+  local util = require("lspconfig.util")
+  local def = M.get_config(server)
+  if def ~= nil then
+    def.document_config.on_new_config = util.add_hook_before(
+      def.document_config.on_new_config,
+      function(config, root_dir)
+        if cond(root_dir, config) then
+          config.enabled = false
+        end
+      end
+    )
+  end
+end
 function M.setup(options)
   local nvim_lsp = require("lspconfig")
   local capabilities = vim.tbl_deep_extend(
@@ -86,11 +105,6 @@ function M.setup(options)
     inlay_hints = { enabled = true },
     setup = {},
   }, options or {})
-
-  local mason_lspconfig = require("mason-lspconfig")
-  mason_lspconfig.setup({
-    ensure_installed = vim.tbl_keys(options.servers),
-  })
 
   for server_name, server_opts in pairs(options.servers) do
     local server_config = vim.tbl_deep_extend("force", {
@@ -110,6 +124,23 @@ function M.setup(options)
       nvim_lsp[server_name].setup(server_config)
     end
   end
+  local mason_lspconfig = require("mason-lspconfig")
+  mason_lspconfig.setup({
+    ensure_installed = vim.tbl_keys(options.servers),
+  })
 end
-
+M.action = setmetatable({}, {
+  __index = function(_, action)
+    return function()
+      vim.lsp.buf.code_action({
+        apply = true,
+        context = {
+          only = { action },
+          diagnostics = {},
+        },
+      })
+    end
+  end,
+})
 return M
+

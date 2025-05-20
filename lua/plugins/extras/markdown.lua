@@ -43,7 +43,6 @@ return {
   },
   {
     "lukas-reineke/headlines.nvim",
-    -- Not enabled if neovide
     enabled = false,
     opts = function()
       local opts = {}
@@ -57,14 +56,11 @@ return {
     end,
     ft = { "markdown", "norg", "rmd", "org" },
     config = function(_, opts)
-      -- PERF: schedule to prevent headlines slowing down opening a file
       vim.schedule(function()
         local hl = require("headlines")
         hl.setup(opts)
         local md = hl.config.markdown
         hl.refresh()
-
-        -- Toggle markdown headlines on insert enter/leave
         vim.api.nvim_create_autocmd({ "InsertEnter", "InsertLeave" }, {
           callback = function(data)
             if vim.bo.filetype == "markdown" then

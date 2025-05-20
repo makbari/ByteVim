@@ -1,44 +1,44 @@
 return {
-  {
-    "pmizio/typescript-tools.nvim",
-    cond = function()
-      return ByteVim.lsp.get_config_path("package.json") ~= nil and not ByteVim.lsp.deno_config_exist()
-    end,
-    opts = {
-      on_attach = function(client, bfr)
-        if ByteVim.lsp.deno_config_exist() then
-          ByteVim.lsp.stop_lsp_client_by_name("ts_ls")
-          client.stop()
-          return false
-        end
-      end,
-      settings = {
-        tsserver_file_preferences = {
-          includeInlayParameterNameHints = "literals",
-          includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-          includeInlayFunctionParameterTypeHints = true,
-          includeInlayVariableTypeHints = true,
-          includeInlayPropertyDeclarationTypeHints = true,
-          includeInlayFunctionLikeReturnTypeHints = true,
-          includeInlayEnumMemberValueHints = true,
+  "neovim/nvim-lspconfig",
+  event = { "BufReadPre", "BufNewFile" },
+  opts = {
+    servers = {
+      vtsls = {
+        filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+        settings = {
+          typescript = {
+            inlayHints = {
+              parameterNames = { enabled = "all" },
+              parameterTypes = { enabled = true },
+              variableTypes = { enabled = true },
+              propertyDeclarationTypes = { enabled = true },
+              functionLikeReturnTypes = { enabled = true },
+              enumMemberValues = { enabled = true },
+            },
+            preferences = {
+              importModuleSpecifier = "non-relative",
+              jsxAttributeCompletionStyle = "auto",
+            },
+          },
+          javascript = {
+            inlayHints = {
+              parameterNames = { enabled = "all" },
+              parameterTypes = { enabled = true },
+              variableTypes = { enabled = true },
+              propertyDeclarationTypes = { enabled = true },
+              functionLikeReturnTypes = { enabled = true },
+              enumMemberValues = { enabled = true },
+            },
+            preferences = {
+              importModuleSpecifier = "non-relative",
+              jsxAttributeCompletionStyle = "auto",
+            },
+          },
         },
       },
     },
-  },
-  {
-    "dmmulroy/ts-error-translator.nvim",
-    ft = { "javascript", "typescript", "typescriptreact", "svelte" },
-    opts = {
-      auto_override_publish_diagnostics = true,
-    },
-  },
-  {
-    "marilari88/twoslash-queries.nvim",
-    ft = { "javascript", "typescript", "typescriptreact", "svelte" },
-    opts = { is_enabled = false, multi_line = true, highlight = "Type" },
-    keys = {
-      { "<leader>dt", ":TwoslashQueriesEnable<cr>", desc = "Enable twoslash queries" },
-      { "<leader>dd", ":TwoslashQueriesInspect<cr>", desc = "Inspect twoslash queries" },
-    },
+    inlay_hints = { enabled = false },
+    setup = {},
   },
 }
+

@@ -27,7 +27,8 @@ return {
         "tsx",
         "svelte",
         "rust",
-        "go",
+        "go", "gomod", "gowork",
+        "rust", "ron"
       },
       incremental_selection = {
         enable = true,
