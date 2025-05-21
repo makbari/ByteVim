@@ -49,4 +49,13 @@ function M.keymap(keys, func, desc, mode, opts)
   vim.keymap.set(mode, keys, func, { desc = desc })
 end
 
+
+function M.execute(opts)
+  local params = {
+    command = opts.command,
+    arguments = opts.arguments,
+  }
+  return vim.lsp.buf_request(0, "workspace/executeCommand", params, opts.handler)
+end
+
 return M
