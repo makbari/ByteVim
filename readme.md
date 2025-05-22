@@ -1,3 +1,11 @@
+# Description
+This is a `neovim` config personal use in different environments. 
+Mostly support `typescript`, `python`, `rust`, `deno`, `golang`.
+
+this is based on `Lazyvim` config, but since, i do not have a time to configure it, I grab the parts I want, simplified it and create this. 
+
+Most of the keymaps are documented, but there could be couple of keymaps missing.
+
 # Neovim All Keymaps
 
 This document lists all keymaps defined in the provided Neovim configuration files (`lsp_keymaps.lua`, `deno.lua`, `typescript.lua`, `git.lua`, `coding.lua`, `linting.lua`, `editor.lua`, `treesitter.lua`, `ui.lua`, `formatting.lua`), including both **custom keymaps** explicitly defined in the configuration and **default keymaps** provided by plugins, as sourced from plugin documentation and web resources. Each keymap includes a one-sentence explanation and is organized by file, with custom and default keymaps separated for clarity.
