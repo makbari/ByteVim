@@ -22,6 +22,7 @@ return {
       vim.g.komau_variant = "mocha" -- "dark", "darker", "midnight", "mocha", "aura"
     end,
   },
+  { "EdenEast/nightfox.nvim" }, -- lazy,
   {
     "shaunsingh/nord.nvim",
     lazy = false, -- load on startup

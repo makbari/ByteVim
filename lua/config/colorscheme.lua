@@ -1,7 +1,7 @@
 local M = {}
 
 -- Default colorscheme
-M.colorscheme = "nord"
+M.colorscheme = "nightfox"
 
 -- Function to load a specific colorscheme
 function M.load(colorscheme)

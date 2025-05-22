@@ -17,7 +17,7 @@ return {
         "cssls",
         "html",
         "prismals",
-        "volar",
+        -- "volar",
         "gopls",
       },
     },
