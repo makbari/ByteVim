@@ -27,8 +27,16 @@ return {
         "tsx",
         "svelte",
         "rust",
-        "go", "gomod", "gowork",
-        "rust", "ron"
+        "go",
+        "gomod",
+        "gowork",
+        "rust",
+        "ron",
+        "git_config",
+        "gitcommit",
+        "git_rebase",
+        "gitignore",
+        "gitattributes",
       },
       incremental_selection = {
         enable = true,

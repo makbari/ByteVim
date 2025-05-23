@@ -175,6 +175,11 @@ return {
     event = "InsertEnter",
     config = true,
   },
+  -- {
+  --   "ibhagwan/fzf-lua",
+  --   dependencies = { "nvim-tree/nvim-web-devicons" },
+  --   opts = {},
+  -- },
   { "nvim-telescope/telescope-ui-select.nvim" },
   {
     "nvim-telescope/telescope.nvim",
