@@ -51,7 +51,14 @@ return {
         },
         pyright = {},
         jsonls = {},
-        prismals = {},
+        prismals = {
+          filetypes = { "prisma" },
+          settings = {
+            prisma = {
+              prismaFmtBinPath = "prisma-fmt", -- Optional: Path to prisma-fmt binary if not in PATH
+            },
+          },
+        },
         marksman = {},
         cssls = {},
         html = { filetypes = { "html", "twig", "hbs" } },
@@ -73,4 +80,3 @@ return {
     end,
   },
 }
-

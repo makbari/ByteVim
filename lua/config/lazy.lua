@@ -29,7 +29,6 @@ require("lazy").setup({
     { import = "plugins.extras.typescript" },
     { import = "plugins.extras.rust" },
     { import = "plugins.extras.go" },
-    { import = "plugins.extras.prisma" },
     { import = "plugins.extras.markdown" },
     { import = "plugins.extras.docker" },
     { import = "plugins.extras.vue" },
