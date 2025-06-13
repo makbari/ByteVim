@@ -2,7 +2,8 @@ return {
   {
     "sigmaSd/deno-nvim",
     cond = function()
-      return ByteVim.lsp.deno_config_exist()
+      local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
+      return is_deno
     end,
     config = function()
       require("deno-nvim").setup({
@@ -28,4 +29,3 @@ return {
     end,
   },
 }
-

@@ -62,6 +62,7 @@ return {
         marksman = {},
         cssls = {},
         html = { filetypes = { "html", "twig", "hbs" } },
+        ruby_lsp = {},
       },
       inlay_hints = { enabled = true },
       setup = {},

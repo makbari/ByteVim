@@ -32,6 +32,8 @@ return {
         "gowork",
         "rust",
         "ron",
+        "ruby",
+        "eruby",
         "git_config",
         "gitcommit",
         "git_rebase",
@@ -57,6 +59,8 @@ return {
         move = {
           enable = true,
           goto_next_start = {
+            ["]v"] = "@variable.outer", -- Jump to next variable usage
+            ["]s"] = "@scope", -- Jump to next scope (if supported)
             ["]f"] = "@function.outer",
             ["]c"] = "@class.outer",
             ["]a"] = "@parameter.inner",
@@ -69,6 +73,8 @@ return {
             ["]T"] = "@tag.outer", -- JSX/HTML tag
           },
           goto_previous_start = {
+            ["[v"] = "@variable.outer", -- Jump to previous variable usage
+            ["[s"] = "@scope", -- Jump to previous scope
             ["[f"] = "@function.outer",
             ["[c"] = "@class.outer",
             ["[a"] = "@parameter.inner",

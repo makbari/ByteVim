@@ -100,10 +100,19 @@ function M.root(opts)
 end
 
 function M.git()
-  local root = M.root()
-  local git_root = vim.fs.find(".git", { path = root, upward = true })[1]
-  local ret = git_root and vim.fn.fnamemodify(git_root, ":h") or root
-  return ret
+  local root = M.root() or vim.loop.cwd()
+
+  -- Ensure root is expanded and valid
+  root = vim.fn.fnamemodify(root, ":p")
+
+  -- Check with `git rev-parse` directly
+  local git_root = vim.fn.systemlist("git -C " .. root .. " rev-parse --show-toplevel")[1]
+
+  if vim.v.shell_error ~= 0 or git_root == nil or git_root == "" then
+    return root -- fallback to current dir if not a Git repo
+  end
+
+  return git_root
 end
 
 function M.is_git_repo()

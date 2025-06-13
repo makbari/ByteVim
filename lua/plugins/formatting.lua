@@ -1,6 +1,14 @@
 local M = {}
 
----@param opts conform.setupOpts
+-- Add a variable to track the formatting state
+local format_on_save_enabled = true
+
+function M.toggle_format_on_save()
+  format_on_save_enabled = not format_on_save_enabled
+  local msg = format_on_save_enabled and "Enabled formatting on save" or "Disabled formatting on save"
+  vim.notify(msg, vim.log.levels.INFO)
+end
+
 function M.setup(_, opts)
   for _, key in ipairs({ "format_on_save", "format_after_save" }) do
     if opts[key] then
@@ -32,18 +40,26 @@ return {
         mode = { "n", "v" },
         desc = "Format Buffer",
       },
+      {
+        "<leader>ctf",
+        function()
+          M.toggle_format_on_save()
+        end,
+        desc = "Toggle format on save",
+      },
     },
     init = function()
       -- Register the conform formatter with ByteVim's custom logic
       vim.api.nvim_create_autocmd("BufWritePre", {
         group = vim.api.nvim_create_augroup("ByteVimFormat", { clear = true }),
         callback = function()
-          require("conform").format()
+          if format_on_save_enabled then
+            require("conform").format()
+          end
         end,
       })
     end,
     opts = function()
-      ---@type conform.setupOpts
       local opts = {
         default_format_opts = {
           timeout_ms = 3000,
@@ -63,7 +79,7 @@ return {
           rust = { "rustfmt" },
           toml = { "taplo" },
           svelte = { "prettier" },
-          go = { "gofmt" }, -- Add this
+          go = { "gofmt" },
         },
         formatters = {
           injected = { options = { ignore_errors = true } },
