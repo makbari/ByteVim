@@ -8,11 +8,11 @@ return {
   --     style = "moon",
   --   },
   -- },
-  -- {
-  --   "catppuccin/nvim",
-  --   name = "catppuccin",
-  --   priority = 1000,
-  -- },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+  },
   {
     "ntk148v/komau.vim",
     priority = 1000,

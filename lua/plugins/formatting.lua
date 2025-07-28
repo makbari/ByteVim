@@ -68,6 +68,8 @@ return {
           lsp_format = "fallback",
         },
         formatters_by_ft = {
+          html = { "prettier" },
+          htmldjango = { "prettier" },
           lua = { "stylua" },
           fish = { "fish_indent" },
           sh = { "shfmt" },
@@ -80,6 +82,8 @@ return {
           toml = { "taplo" },
           svelte = { "prettier" },
           go = { "gofmt" },
+          yaml = { "yamlfmt" },
+          yml = { "yamlfmt" },
         },
         formatters = {
           injected = { options = { ignore_errors = true } },

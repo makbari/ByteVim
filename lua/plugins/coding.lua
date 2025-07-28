@@ -108,6 +108,11 @@ return {
 
         neogen.setup({
           snippet_engine = "luasnip",
+          languages = {
+            python = { template = { annotation_convention = "google_docstrings" } },
+            lua = { template = { annotation_convention = "emmylua" } },
+            markdown = { template = { annotation_convention = "md" } }, -- For notes!
+          },
         })
       end,
       keys = {

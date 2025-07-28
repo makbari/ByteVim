@@ -7,6 +7,10 @@ return {
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
     keys = {
       { "<BS>", desc = "Decrement Selection", mode = "x" },
+      { "]p", desc = "Next property/parameter", mode = "n" },
+      { "[p", desc = "Previous property/parameter", mode = "n" },
+      { "]m", desc = "Next method/function", mode = "n" },
+      { "[m", desc = "Previous method/function", mode = "n" },
     },
     opts = {
       highlight = { enable = true },
@@ -24,6 +28,7 @@ return {
         "python",
         "typescript",
         "yaml",
+        "yml",
         "tsx",
         "svelte",
         "rust",
@@ -39,6 +44,7 @@ return {
         "git_rebase",
         "gitignore",
         "gitattributes",
+        "decorator",
       },
       incremental_selection = {
         enable = true,
@@ -54,6 +60,8 @@ return {
           keymaps = {
             ["<leader>at"] = { query = "@tag.outer", desc = "Select around JSX tag" },
             ["<leader>it"] = { query = "@tag.inner", desc = "Select inside JSX tag" },
+            ["ap"] = { query = "@parameter.outer", desc = "Around parameter/property" },
+            ["ip"] = { query = "@parameter.inner", desc = "Inside parameter/property" },
           },
         },
         move = {
@@ -85,6 +93,15 @@ return {
             ["[C"] = "@class.outer",
             ["[A"] = "@parameter.inner",
             ["[T"] = "@tag.outer", -- JSX/HTML tag
+          },
+        },
+        swap = {
+          enable = true,
+          swap_next = {
+            ["<leader>sn"] = "@parameter.inner", -- Swap with next parameter/prop
+          },
+          swap_previous = {
+            ["<leader>sp"] = "@parameter.inner", -- Swap with previous parameter/prop
           },
         },
       },

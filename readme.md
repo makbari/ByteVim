@@ -1,8 +1,9 @@
 # Description
-This is a `neovim` config personal use in different environments. 
+
+This is a `neovim` config personal use in different environments.
 Mostly support `typescript`, `python`, `rust`, `deno`, `golang`.
 
-this is based on `Lazyvim` config, but since, i do not have a time to configure it, I grab the parts I want, simplified it and create this. 
+this is based on `Lazyvim` config, but since, i do not have a time to configure it, I grab the parts I want, simplified it and create this.
 
 Most of the keymaps are documented, but there could be couple of keymaps missing.
 
