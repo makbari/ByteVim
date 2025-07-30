@@ -1,31 +1,34 @@
 return {
-  {
-    "sigmaSd/deno-nvim",
-    cond = function()
-      local is_deno = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc")
-      return is_deno
-    end,
-    config = function()
-      require("deno-nvim").setup({
-        server = {
-          capabilities = require("cmp_nvim_lsp").default_capabilities(),
-          on_attach = function(client, bufnr)
-            ByteVim.lsp.stop_lsp_client_by_name("vtsls")
-          end,
-          settings = {
-            deno = {
-              inlayHints = {
-                parameterNames = { enabled = "all" },
-                parameterTypes = { enabled = true },
-                variableTypes = { enabled = true },
-                propertyDeclarationTypes = { enabled = true },
-                functionLikeReturnTypes = { enabled = true },
-                enumMemberValues = { enabled = true },
-              },
-            },
+  "neovim/nvim-lspconfig",
+  event = { "BufReadPre", "BufNewFile" },
+  opts = {
+    servers = {
+      denols = {
+        filetypes = {
+          "javascript",
+          "javascriptreact",
+          "javascript.jsx",
+          "typescript",
+          "typescriptreact",
+          "typescript.tsx",
+        },
+        root_dir = require("lspconfig.util").root_pattern("deno.json", "deno.jsonc", ".git"),
+        single_file_support = false,
+        settings = {
+          deno = {
+            enable = true,
+            suggest = { imports = { hosts = { ["https://deno.land"] = true } } },
+          },
+          inlayHints = {
+            parameterNames = { enabled = "all" },
+            parameterTypes = { enabled = true },
+            variableTypes = { enabled = true },
+            propertyDeclarationTypes = { enabled = true },
+            functionLikeReturnTypes = { enabled = true },
+            enumMemberValues = { enabled = true },
           },
         },
-      })
-    end,
+      },
+    },
   },
 }

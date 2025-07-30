@@ -38,14 +38,15 @@ function M.realpath(path)
   if path == "" or path == nil then
     return nil
   end
-  path = vim.uv.fs_realpath(path) or path
-  return M.norm(path)
+  local resolved = vim.uv.fs_realpath(path)
+  return M.norm(resolved or path)
 end
 
 function M.resolve(spec)
   if M.detectors[spec] then
     return M.detectors[spec]
-  elseif type(spec) == "function" then
+  end
+  if type(spec) == "function" then
     return spec
   end
   return function(buf)
@@ -57,7 +58,6 @@ function M.detect(opts)
   opts = opts or {}
   opts.spec = opts.spec or type(vim.g.root_spec) == "table" and vim.g.root_spec or M.spec
   opts.buf = (opts.buf == nil or opts.buf == 0) and vim.api.nvim_get_current_buf() or opts.buf
-
   local ret = {}
   for _, spec in ipairs(opts.spec) do
     local paths = M.resolve(spec)(opts.buf)
@@ -100,18 +100,12 @@ function M.root(opts)
 end
 
 function M.git()
-  local root = M.root() or vim.loop.cwd()
-
-  -- Ensure root is expanded and valid
+  local root = M.root() or vim.uv.cwd()
   root = vim.fn.fnamemodify(root, ":p")
-
-  -- Check with `git rev-parse` directly
   local git_root = vim.fn.systemlist("git -C " .. root .. " rev-parse --show-toplevel")[1]
-
-  if vim.v.shell_error ~= 0 or git_root == nil or git_root == "" then
-    return root -- fallback to current dir if not a Git repo
+  if vim.v.shell_error ~= 0 or not git_root or git_root == "" then
+    return root
   end
-
   return git_root
 end
 
