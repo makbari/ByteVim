@@ -6,9 +6,11 @@ local M = {}
 function M.get_config_path(filename)
   local current_dir = vim.fn.getcwd()
   local config_file = current_dir .. "/" .. filename
+
   if vim.fn.filereadable(config_file) == 1 then
     return current_dir
   end
+
   local git_root = Path.get_git_root()
   if Path.is_git_repo() and git_root ~= current_dir then
     config_file = git_root .. "/" .. filename
@@ -16,6 +18,7 @@ function M.get_config_path(filename)
       return git_root
     end
   end
+
   return nil
 end
 
@@ -29,17 +32,28 @@ function M.stop_lsp_client_by_name(name)
 end
 
 function M.deno_config_exist()
-  return M.get_config_path("deno.json") ~= nil or M.get_config_path("deno.jsonc") ~= nil
+  return M.get_config_path("deno.json") ~= nil
+    or M.get_config_path("deno.jsonc") ~= nil
+    or M.get_config_path("import_map.json") ~= nil
 end
 
 function M.eslint_config_exists()
-  local config_files =
-    { ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.yaml", ".eslintrc.yml", ".eslintrc.json", ".eslintrc" }
+  local config_files = {
+    ".eslintrc.js",
+    ".eslintrc.cjs",
+    ".eslintrc.yaml",
+    ".eslintrc.yml",
+    ".eslintrc.json",
+    ".eslintrc",
+  }
+
   local check_paths = { vim.fn.getcwd() }
   local git_root = Path.get_git_root()
+
   if Path.is_git_repo() and git_root ~= vim.fn.getcwd() then
     table.insert(check_paths, git_root)
   end
+
   for _, dir in ipairs(check_paths) do
     for _, file in ipairs(config_files) do
       if vim.fn.filereadable(dir .. "/" .. file) == 1 then
@@ -47,6 +61,7 @@ function M.eslint_config_exists()
       end
     end
   end
+
   return false
 end
 
@@ -92,7 +107,12 @@ function M.setup(options)
     vim.lsp.protocol.make_client_capabilities(),
     require("cmp_nvim_lsp").default_capabilities()
   )
-  options = vim.tbl_deep_extend("force", { servers = {}, inlay_hints = { enabled = true } }, options or {})
+
+  options = vim.tbl_deep_extend("force", {
+    servers = {},
+    inlay_hints = { enabled = true },
+  }, options or {})
+
   for server_name, server_opts in pairs(options.servers) do
     if server_opts and M.is_enabled(server_name) then
       local final_config = vim.tbl_deep_extend("force", {
@@ -105,6 +125,7 @@ function M.setup(options)
           end
         end,
       }, server_opts)
+
       nvim_lsp[server_name].setup(final_config)
     end
   end
@@ -113,7 +134,10 @@ end
 M.action = setmetatable({}, {
   __index = function(_, action)
     return function()
-      vim.lsp.buf.code_action({ apply = true, context = { only = { action }, diagnostics = {} } })
+      vim.lsp.buf.code_action({
+        apply = true,
+        context = { only = { action }, diagnostics = {} },
+      })
     end
   end,
 })

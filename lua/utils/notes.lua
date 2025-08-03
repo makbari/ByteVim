@@ -1,15 +1,12 @@
 local M = {}
-
 M.notes_dir = vim.fn.expand("~/notes/")
 M.float_config = { width = 80, height = 20, border = "rounded", title = " Notes ", title_pos = "center" }
-
 function M.ensure_notes_dir()
   if vim.fn.isdirectory(M.notes_dir) == 0 then
     vim.fn.mkdir(M.notes_dir, "p")
     vim.notify("Created notes directory: " .. M.notes_dir, vim.log.levels.INFO)
   end
 end
-
 local function get_todays_notes()
   M.ensure_notes_dir()
   local date_prefix = os.date("%d%m%Y") .. "_"
@@ -21,7 +18,6 @@ local function get_todays_notes()
   end
   return notes
 end
-
 local function get_next_index()
   local todays_notes = get_todays_notes()
   local max_index = 0
@@ -33,13 +29,11 @@ local function get_next_index()
   end
   return max_index + 1
 end
-
 local function generate_filename(custom_name)
   local date_str = os.date("%d%m%Y")
   local index = get_next_index()
   return string.format("%s_%d_%s.md", date_str, index, custom_name)
 end
-
 function M.floating_note()
   M.ensure_notes_dir()
   vim.ui.input({ prompt = "Note description: " }, function(input)
@@ -96,7 +90,6 @@ function M.floating_note()
     end, { buffer = buf })
   end)
 end
-
 function M.search_floating_notes()
   M.ensure_notes_dir()
   require("fzf-lua").files({
@@ -145,7 +138,6 @@ function M.search_floating_notes()
     },
   })
 end
-
 function M.delete_note()
   M.ensure_notes_dir()
   require("fzf-lua").files({
@@ -173,5 +165,4 @@ function M.delete_note()
     },
   })
 end
-
 return M

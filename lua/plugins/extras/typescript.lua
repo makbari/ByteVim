@@ -1,9 +1,23 @@
 return {
-  "neovim/nvim-lspconfig",
-  event = { "BufReadPre", "BufNewFile" },
-  opts = {
-    servers = {
-      vtsls = {
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = function(_, opts)
+      opts.ensure_installed = opts.ensure_installed or {}
+      vim.list_extend(opts.ensure_installed, { "typescript", "tsx", "javascript" })
+    end,
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    opts = function(_, opts)
+      opts.ensure_installed = opts.ensure_installed or {}
+      vim.list_extend(opts.ensure_installed, { "vtsls" })
+    end,
+  },
+  {
+    "neovim/nvim-lspconfig",
+    opts = function(_, opts)
+      opts.servers = opts.servers or {}
+      opts.servers.vtsls = {
         filetypes = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
         settings = {
           typescript = {
@@ -32,6 +46,9 @@ return {
         root_dir = require("lspconfig.util").root_pattern("package.json", "tsconfig.json", ".git"),
         single_file_support = false,
         on_attach = function(client, bufnr)
+          if ByteVim.deno_config_exist() then
+            ByteVim.stop_lsp_client_by_name("vtsls")
+          end
           local function map(keys, func, desc)
             vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
           end
@@ -48,8 +65,8 @@ return {
             vim.lsp.buf.code_action({ context = { only = { "source.fixAll.ts" } }, apply = true })
           end, "Fix all diagnostics")
         end,
-      },
-    },
-    inlay_hints = { enabled = false },
+      }
+      opts.inlay_hints = { enabled = false }
+    end,
   },
 }

@@ -25,8 +25,8 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   spec = {
     { import = "plugins" },
-    { import = "plugins.extras.deno" },
     { import = "plugins.extras.typescript" },
+    { import = "plugins.extras.deno" },
     { import = "plugins.extras.rust" },
     -- { import = "plugins.extras.go" },
     -- { import = "plugins.extras.markdown" },

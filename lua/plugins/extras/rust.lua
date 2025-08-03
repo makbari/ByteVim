@@ -62,7 +62,7 @@ return {
     end,
   },
   {
-    "mason-org/mason.nvim",
+    "williamboman/mason.nvim",
     optional = true,
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}

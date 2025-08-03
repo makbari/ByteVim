@@ -1,5 +1,4 @@
 local M = {}
-
 function M.setup_keymaps()
   local fzf_lua = require("fzf-lua")
   local keymaps = {
@@ -35,5 +34,4 @@ function M.setup_keymaps()
     ByteVim.utils.keymap(keymap.keys, keymap.func, keymap.desc, keymap.mode)
   end
 end
-
 return M
