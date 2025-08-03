@@ -1,16 +1,122 @@
+-- lua/utils/lsp.lua
+local M = {}
+
 local Path = require("utils.path")
 local util = require("lspconfig.util")
 
-local M = {}
+---@param opts? {id?: number, bufnr?: number, name?: string, method?: string, filter?: fun(client: vim.lsp.Client): boolean}
+function M.get_clients(opts)
+  opts = opts or {}
+  local ret = vim.lsp.get_clients()
+  if opts.method then
+    ret = vim.tbl_filter(function(client)
+      return client.supports_method(opts.method, { bufnr = opts.bufnr })
+    end, ret)
+  end
+  if opts.filter then
+    ret = vim.tbl_filter(opts.filter, ret)
+  end
+  return ret
+end
+
+---@param on_attach fun(client: vim.lsp.Client, buffer: number)
+---@param name? string
+function M.on_attach(on_attach, name)
+  vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(args)
+      local buffer = args.buf
+      local client = vim.lsp.get_client_by_id(args.data.client_id)
+      if client and (not name or client.name == name) then
+        on_attach(client, buffer)
+      end
+    end,
+  })
+end
+
+function M.setup()
+  local register_capability = vim.lsp.handlers["client/registerCapability"]
+  vim.lsp.handlers["client/registerCapability"] = function(err, res, ctx)
+    local ret = register_capability(err, res, ctx)
+    local client = vim.lsp.get_client_by_id(ctx.client_id)
+    if client then
+      for buffer in pairs(client.attached_buffers) do
+        vim.api.nvim_exec_autocmds("User", {
+          pattern = "LspDynamicCapability",
+          data = { client_id = client.id, buffer = buffer },
+        })
+      end
+    end
+    return ret
+  end
+  M.on_attach(function(client, buffer)
+    M._check_methods(client, buffer)
+  end)
+end
+
+M._supports_method = {}
+function M._check_methods(client, buffer)
+  if not vim.api.nvim_buf_is_valid(buffer) or not vim.bo[buffer].buflisted or vim.bo[buffer].buftype == "nofile" then
+    return
+  end
+  for method, clients in pairs(M._supports_method) do
+    clients[client] = clients[client] or {}
+    if not clients[client][buffer] and client.supports_method(method, { bufnr = buffer }) then
+      clients[client][buffer] = true
+      vim.api.nvim_exec_autocmds("User", {
+        pattern = "LspSupportsMethod",
+        data = { client_id = client.id, buffer = buffer, method = method },
+      })
+    end
+  end
+end
+
+---@param method string
+---@param fn fun(client: vim.lsp.Client, buffer: number)
+function M.on_supports_method(method, fn)
+  M._supports_method[method] = M._supports_method[method] or setmetatable({}, { __mode = "k" })
+  vim.api.nvim_create_autocmd("User", {
+    pattern = "LspSupportsMethod",
+    callback = function(args)
+      local client = vim.lsp.get_client_by_id(args.data.client_id)
+      local buffer = args.data.buffer
+      if client and method == args.data.method then
+        fn(client, buffer)
+      end
+    end,
+  })
+end
+
+function M.get_config(server)
+  return rawget(require("lspconfig.configs"), server)
+end
+
+function M.is_enabled(server)
+  local c = M.get_config(server)
+  return c and c.enabled ~= false
+end
+
+---@param server string
+---@param cond fun(root_dir: string, config: table): boolean
+function M.disable(server, cond)
+  local def = M.get_config(server)
+  if def then
+    def.document_config.on_new_config = util.add_hook_before(
+      def.document_config.on_new_config,
+      function(config, root_dir)
+        if cond(root_dir, config) then
+          config.enabled = false
+        end
+      end
+    )
+  end
+end
 
 function M.get_config_path(filename)
   local current_dir = vim.fn.getcwd()
   local config_file = current_dir .. "/" .. filename
-
   if vim.fn.filereadable(config_file) == 1 then
     return current_dir
   end
-
   local git_root = Path.get_git_root()
   if Path.is_git_repo() and git_root ~= current_dir then
     config_file = git_root .. "/" .. filename
@@ -18,17 +124,7 @@ function M.get_config_path(filename)
       return git_root
     end
   end
-
   return nil
-end
-
-function M.stop_lsp_client_by_name(name)
-  for _, client in ipairs(vim.lsp.get_clients()) do
-    if client.name == name then
-      vim.lsp.stop_client(client.id, true)
-      return
-    end
-  end
 end
 
 function M.deno_config_exist()
@@ -46,14 +142,11 @@ function M.eslint_config_exists()
     ".eslintrc.json",
     ".eslintrc",
   }
-
   local check_paths = { vim.fn.getcwd() }
   local git_root = Path.get_git_root()
-
   if Path.is_git_repo() and git_root ~= vim.fn.getcwd() then
     table.insert(check_paths, git_root)
   end
-
   for _, dir in ipairs(check_paths) do
     for _, file in ipairs(config_files) do
       if vim.fn.filereadable(dir .. "/" .. file) == 1 then
@@ -61,72 +154,14 @@ function M.eslint_config_exists()
       end
     end
   end
-
   return false
 end
 
-function M.on_attach(on_attach_fn)
-  vim.api.nvim_create_autocmd("LspAttach", {
-    callback = function(args)
-      local buffer = args.buf
-      local client = vim.lsp.get_client_by_id(args.data.client_id)
-      if client then
-        on_attach_fn(client, buffer)
-      end
-    end,
-  })
-end
-
-function M.is_enabled(server)
-  local c = M.get_config(server)
-  return c and c.enabled ~= false
-end
-
-function M.get_config(server)
-  return rawget(require("lspconfig.configs"), server)
-end
-
-function M.disable(server, cond)
-  local def = M.get_config(server)
-  if def then
-    def.document_config.on_new_config = util.add_hook_before(
-      def.document_config.on_new_config,
-      function(config, root_dir)
-        if cond(root_dir, config) then
-          config.enabled = false
-        end
-      end
-    )
-  end
-end
-
-function M.setup(options)
-  local nvim_lsp = require("lspconfig")
-  local capabilities = vim.tbl_deep_extend(
-    "force",
-    vim.lsp.protocol.make_client_capabilities(),
-    require("cmp_nvim_lsp").default_capabilities()
-  )
-
-  options = vim.tbl_deep_extend("force", {
-    servers = {},
-    inlay_hints = { enabled = true },
-  }, options or {})
-
-  for server_name, server_opts in pairs(options.servers) do
-    if server_opts and M.is_enabled(server_name) then
-      local final_config = vim.tbl_deep_extend("force", {
-        capabilities = capabilities,
-        on_attach = function(client, buf)
-          if vim.fn.has("nvim-0.10") == 1 and options.inlay_hints.enabled then
-            if client.supports_method("textDocument/inlayHint") then
-              vim.lsp.inlay_hint.enable(true, { bufnr = buf })
-            end
-          end
-        end,
-      }, server_opts)
-
-      nvim_lsp[server_name].setup(final_config)
+function M.stop_lsp_client_by_name(name)
+  for _, client in ipairs(vim.lsp.get_clients()) do
+    if client.name == name then
+      vim.lsp.stop_client(client.id, true)
+      return
     end
   end
 end
