@@ -7,7 +7,7 @@ local opts = { silent = true }
 keymap("v", "p", '"_dP', opts)
 
 -- Copy whole file content to clipboard with C-c
-keymap("n", "<C-c>", ':%"+y<CR>', opts)
+keymap("n", "<leader>ya", ':%"+y<CR>', { noremap = true, silent = true, desc = "Copy whole file (Yank All)" })
 -- Keymap for copying selected text to clipboard
 keymap("v", "<leader>y", '"+y', { desc = "Copy to system clipboard" })
 
@@ -25,16 +25,16 @@ keymap("n", "<C-u>", "<C-u>zz", opts)
 keymap({ "n", "x", "o" }, "H", "^", opts)
 keymap({ "n", "x", "o" }, "L", "g_", opts)
 -- Jump to next search result and center screen
-keymap("n", "n", "nzzv", opts)
+keymap("n", "n", "nzz", opts)
 
 -- Jump to previous search result and center screen
-keymap("n", "N", "Nzzv", opts)
+keymap("n", "N", "Nzz", opts)
 
 -- Search forward for the word under cursor and center screen
-keymap("n", "*", "*zzv", opts)
+keymap("n", "*", "*zz", opts)
 
 -- Search backward for the word under cursor and center screen
-keymap("n", "#", "#zzv", opts)
+keymap("n", "#", "#zz", opts)
 
 -- Search forward for partial word under cursor and center screen
 keymap("n", "g*", "g*zz", opts)

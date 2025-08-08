@@ -18,7 +18,7 @@ return {
     opts = function(_, opts)
       opts.servers = opts.servers or {}
       opts.servers.angularls = {
-        filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx" },
+        filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx", "htmlangular" },
         root_dir = require("lspconfig.util").root_pattern("angular.json", "project.json", ".git"),
         single_file_support = false,
         on_attach = function(client, bufnr)
