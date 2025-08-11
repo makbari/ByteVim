@@ -1,29 +1,22 @@
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { "vue", "typescript", "javascript" })
-    end,
-  },
-  {
     "williamboman/mason-lspconfig.nvim",
     opts = function(_, opts)
       opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { "volar" })
+      vim.list_extend(opts.ensure_installed, { "vuels" })
     end,
   },
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
       opts.servers = opts.servers or {}
-      opts.servers.volar = {
+      opts.servers.vuels = {
         filetypes = { "vue", "typescript", "javascript" },
         root_dir = require("lspconfig.util").root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
         single_file_support = false,
         init_options = {
           vue = {
-            hybridMode = false, -- Use volar for Vue 3
+            hybridMode = false,
           },
         },
         settings = {

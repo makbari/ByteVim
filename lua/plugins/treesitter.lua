@@ -111,15 +111,8 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter-textobjects",
-    event = "BufReadPost",
-    config = function()
-      local ts_config = require("nvim-treesitter.configs").get_module("textobjects")
-      if ts_config then
-        require("nvim-treesitter.configs").setup({
-          textobjects = ts_config.textobjects,
-        })
-      end
-    end,
+    after = "nvim-treesitter",
+    requires = "nvim-treesitter/nvim-treesitter",
   },
 
   {
