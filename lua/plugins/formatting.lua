@@ -77,7 +77,7 @@ return {
           typescriptreact = { "prettier" },
           javascript = { "prettier" },
           python = { "black" },
-          markdown = { "prettier" },
+          markdown = { "markdownfmt" },
           rust = { "rustfmt" },
           toml = { "taplo" },
           svelte = { "prettier" },

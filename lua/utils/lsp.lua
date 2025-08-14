@@ -10,7 +10,7 @@ function M.get_clients(opts)
   local ret = vim.lsp.get_clients()
   if opts.method then
     ret = vim.tbl_filter(function(client)
-      return client.supports_method(opts.method, { bufnr = opts.bufnr })
+      return client:supports_method(opts.method, { bufnr = opts.bufnr })
     end, ret)
   end
   if opts.filter then
@@ -60,7 +60,7 @@ function M._check_methods(client, buffer)
   end
   for method, clients in pairs(M._supports_method) do
     clients[client] = clients[client] or {}
-    if not clients[client][buffer] and client.supports_method(method, { bufnr = buffer }) then
+    if not clients[client][buffer] and client:supports_method(method, { bufnr = buffer }) then
       clients[client][buffer] = true
       vim.api.nvim_exec_autocmds("User", {
         pattern = "LspSupportsMethod",
