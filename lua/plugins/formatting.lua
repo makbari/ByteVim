@@ -69,6 +69,7 @@ return {
         },
         formatters_by_ft = {
           html = { "prettier" },
+          htmlangular = { "prettier" },
           htmldjango = { "prettier" },
           lua = { "stylua" },
           fish = { "fish_indent" },
