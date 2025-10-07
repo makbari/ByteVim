@@ -84,6 +84,7 @@ return {
           svelte = { "prettier" },
           go = { "gofmt" },
           yaml = { "yamlfmt" },
+          json = { "prettier", "jsonls" },
           yml = { "yamlfmt" },
         },
         formatters = {

@@ -141,6 +141,7 @@ function M.eslint_config_exists()
     ".eslintrc.yml",
     ".eslintrc.json",
     ".eslintrc",
+    "eslint.config.mjs",
   }
   local check_paths = { vim.fn.getcwd() }
   local git_root = Path.get_git_root()

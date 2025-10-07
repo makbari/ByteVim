@@ -5,8 +5,8 @@ return {
     opts = {
       events = { "BufWritePost" }, -- Only lint on save
       linters_by_ft = {
-        typescript = { "eslint" },
-        typescriptreact = { "eslint" },
+        typescript = { "eslint_d" },
+        typescriptreact = { "eslint_d" },
         deno = { "deno" },
         rust = { "clippy" },
         python = { "flake8" },
@@ -15,9 +15,12 @@ return {
         go = { "golangcilint" }, -- Add this
       },
       linters = {
-        eslint = {
+        eslint_d = {
           condition = function(ctx)
-            return vim.fs.find({ ".eslintrc.js", ".eslintrc.json", ".eslintrc" }, { path = ctx.dirname, upward = true })[1]
+            return vim.fs.find(
+              { ".eslintrc.js", ".eslintrc.json", ".eslintrc", "eslint.config.mjs" },
+              { path = ctx.dirname, upward = true }
+            )[1]
           end,
         },
         luacheck = {

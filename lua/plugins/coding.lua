@@ -5,6 +5,7 @@ return {
     version = false, -- Use the latest version
     event = "InsertEnter",
     dependencies = {
+      "onsails/lspkind-nvim",
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
@@ -43,6 +44,9 @@ return {
             if icons[item.kind] then
               item.kind = icons[item.kind] .. " " .. item.kind
             end
+            require("lspkind").cmp_format({
+              before = require("tailwind-tools.cmp").lspkind_format,
+            })
             return item
           end,
         },
@@ -187,5 +191,18 @@ return {
     lazy = false,
     version = "*",
     config = true,
+  },
+  {
+    "norcalli/nvim-colorizer.lua",
+    enabled = true,
+    config = function()
+      require("colorizer").setup({
+        "css",
+        "scss",
+        "javascript",
+      }, {
+        mode = "background",
+      })
+    end,
   },
 }

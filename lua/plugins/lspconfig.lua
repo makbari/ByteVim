@@ -7,6 +7,7 @@ return {
     build = ":MasonUpdate",
     opts = {
       ensure_installed = {
+        "eslint_d",
         "stylua", -- Example formatter, extend as needed
         "shfmt",
       },
