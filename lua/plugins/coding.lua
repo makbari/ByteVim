@@ -186,12 +186,12 @@ return {
     "echasnovski/mini.surround",
     opts = {},
   },
-  {
-    "nvim-neorg/neorg",
-    lazy = false,
-    version = "*",
-    config = true,
-  },
+  -- {
+  --   "nvim-neorg/neorg",
+  --   lazy = false,
+  --   version = "*",
+  --   config = true,
+  -- },
   {
     "norcalli/nvim-colorizer.lua",
     enabled = true,

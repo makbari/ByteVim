@@ -1,5 +1,10 @@
 local M = {}
 
+-- Global versions for plugins
+M.versions = {
+  lspconfig = "v2.4.0",
+}
+
 setmetatable(M, {
   __index = function(t, k)
     -- Check if the utility module is already loaded

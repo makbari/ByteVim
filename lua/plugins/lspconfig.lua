@@ -53,6 +53,7 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+    version = ByteVim.versions.lspconfig,
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "williamboman/mason.nvim",
