@@ -31,7 +31,7 @@ require("lazy").setup({
     { import = "plugins.extras.go" },
     { import = "plugins.extras.markdown" },
     { import = "plugins.extras.docker" },
-    { import = "plugins.extras.vue" },
+    -- { import = "plugins.extras.vue" },
     { import = "plugins.extras.angular" },
     { import = "plugins.extras.react" },
     { import = "plugins.extras.gitlab" },

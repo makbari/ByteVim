@@ -16,7 +16,7 @@ return {
           typescript = {
             inlayHints = {
               parameterNames = { enabled = "all" },
-              parameterTypes = { enabled = true },
+              parameterTypes = { enabled = false },
               variableTypes = { enabled = true },
               propertyDeclarationTypes = { enabled = true },
               functionLikeReturnTypes = { enabled = true },
