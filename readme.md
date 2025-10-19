@@ -178,6 +178,26 @@ Default keymaps from `goto-preview` with `default_mappings = true`.
 
 ---
 
+---
+
+## DAP Keymaps (`dap.lua`)
+
+### Custom Keymaps
+
+Keymaps for debugging with DAP.
+
+- **`<leader>db`**: Toggles breakpoint at current line.
+- **`<leader>dB`**: Sets conditional breakpoint at current line.
+- **`<leader>dc`**: Continues execution from current breakpoint.
+- **`<leader>di`**: Steps into the current function call.
+- **`<leader>do`**: Steps over the current line.
+- **`<leader>dO`**: Steps out of the current function.
+- **`<leader>dd`**: Selects and runs a DAP configuration.
+- **`<leader>dl`**: Runs the last DAP configuration.
+- **`<leader>dt`**: Terminates the current debugging session.
+- **`<leader>de`**: Evaluates expression under cursor (normal) or selection (visual).
+
+---
 ## Tree-sitter Keymaps (`treesitter.lua`)
 
 ### Custom Keymaps
