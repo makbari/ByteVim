@@ -26,14 +26,14 @@ return {
           },
         },
       }
-      -- Configurations
-      dap.configurations.javascript = {
+      local js_configs = {
         {
           type = "pwa-node",
           request = "launch",
           name = "Launch file",
           program = "${file}",
           cwd = "${workspaceFolder}",
+          resolveSourceMapLocations = { "${workspaceFolder}/**", "!**/node_modules/**" },
         },
         {
           type = "pwa-node",
@@ -49,6 +49,7 @@ return {
           console = "integratedTerminal",
           internalConsoleOptions = "neverOpen",
           cwd = "${workspaceFolder}",
+          resolveSourceMapLocations = { "${workspaceFolder}/**", "!**/node_modules/**" },
         },
         {
           type = "pwa-node",
@@ -63,11 +64,13 @@ return {
           console = "integratedTerminal",
           internalConsoleOptions = "neverOpen",
           cwd = "${workspaceFolder}",
+          resolveSourceMapLocations = { "${workspaceFolder}/**", "!**/node_modules/**" },
         },
       }
-      dap.configurations.typescript = dap.configurations.javascript
-      dap.configurations.typescriptreact = dap.configurations.javascript
-      dap.configurations.javascriptreact = dap.configurations.javascript
+      dap.configurations.javascript = js_configs
+      dap.configurations.typescript = js_configs
+      dap.configurations.typescriptreact = js_configs
+      dap.configurations.javascriptreact = js_configs
     end,
     config = function()
       local dap = require("dap")
@@ -81,7 +84,6 @@ return {
       vim.keymap.set("n", "<leader>do", dap.step_over, { desc = "Debug: Step Over" })
       vim.keymap.set("n", "<leader>dO", dap.step_out, { desc = "Debug: Step Out" })
       vim.keymap.set("n", "<leader>dd", function()
-        local dap = require("dap")
         local configs = {}
         local seen = {}
         for ft, confs in pairs(dap.configurations) do
@@ -107,19 +109,13 @@ return {
       vim.keymap.set("n", "<leader>dt", function()
         require("dap").terminate()
       end, { desc = "Debug: Terminate" })
-
       vim.keymap.set({ "n", "v" }, "<leader>de", function()
         require("dapui").eval()
       end, { desc = "Debug: Evaluate expression/selection" })
-      vim.keymap.set("n", "<leader>dw", function()
-        require("dapui").eval(vim.fn.input("Watch expression: "))
-      end, { desc = "Debug: Add Watch" })
-      vim.keymap.set("n", "<leader>dh", function()
-        require("dapui").float_element("scopes")
-      end, { desc = "Debug: Hover Variables" })
+      -- REPL keymap for interactive console
       vim.keymap.set("n", "<leader>dr", function()
         require("dap").repl.open()
-      end, { desc = "Debug: Open REPL" })
+      end, { desc = "Debug: Open REPL Console" })
     end,
   },
   {
@@ -127,7 +123,28 @@ return {
     dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
     config = function()
       local dapui = require("dapui")
-      dapui.setup()
+      dapui.setup({
+        layouts = {
+          {
+            elements = {
+              { id = "scopes", size = 0.25 },
+              { id = "breakpoints", size = 0.25 },
+              { id = "stacks", size = 0.25 },
+              { id = "watches", size = 0.25 },
+            },
+            size = 40,
+            position = "left",
+          },
+          {
+            elements = {
+              { id = "repl", size = 0.5 }, -- Emphasize REPL for console
+              { id = "console", size = 0.5 },
+            },
+            size = 10,
+            position = "bottom",
+          },
+        },
+      })
       local dap = require("dap")
       dap.listeners.after.event_initialized["dapui_config"] = function()
         dapui.open()
