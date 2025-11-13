@@ -37,6 +37,7 @@ require("lazy").setup({
     { import = "plugins.extras.gitlab" },
     { import = "plugins.extras.tailwindcss" },
     { import = "plugins.extras.html" },
+    { import = "plugins.extras.http-client" },
   },
   checker = { enabled = false },
   change_detection = { enabled = true, notify = false },
