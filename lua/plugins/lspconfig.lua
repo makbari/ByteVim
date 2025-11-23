@@ -94,7 +94,7 @@ return {
           },
         },
         inlay_hints = {
-          enabled = true,
+          enabled = false,
           exclude = { "vue" }, -- Volar's inlay hints can be problematic
         },
         codelens = {
@@ -125,7 +125,7 @@ return {
                 },
                 completion = { callSnippet = "Replace" },
                 hint = {
-                  enable = true,
+                  enable = false,
                   setType = false,
                   paramType = true,
                   paramName = "Disable",

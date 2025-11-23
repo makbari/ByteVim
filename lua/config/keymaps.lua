@@ -23,7 +23,7 @@ keymap("n", "<C-u>", "<C-u>zz", opts)
 
 -- Move to start/end of line
 keymap({ "n", "x", "o" }, "H", "^", opts)
-keymap({ "n", "x", "o" }, "L", "g_", opts)
+keymap({ "n", "x", "o" }, "L", "$", opts)
 -- Jump to next search result and center screen
 keymap("n", "n", "nzz", opts)
 
