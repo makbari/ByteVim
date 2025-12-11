@@ -9,7 +9,7 @@ return {
         typescriptreact = { "eslint_d" },
         deno = { "deno" },
         rust = { "clippy" },
-        python = { "flake8" },
+        python = { "ruff" },
         markdown = { "markdownlint" },
         lua = { "luacheck" },
         go = { "golangcilint" }, -- Add this

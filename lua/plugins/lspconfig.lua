@@ -1,4 +1,3 @@
--- lua/plugins/lspconfig.lua
 return {
   {
     "williamboman/mason.nvim",
@@ -8,8 +7,9 @@ return {
     opts = {
       ensure_installed = {
         "eslint_d",
-        "stylua", -- Example formatter, extend as needed
+        "stylua",
         "shfmt",
+        "debugpy",
       },
     },
     config = function(_, opts)
@@ -39,7 +39,6 @@ return {
     opts = {
       ensure_installed = {
         "lua_ls",
-        "pyright",
         "jsonls",
         "marksman",
         "cssls",
@@ -47,6 +46,7 @@ return {
         "prismals",
         "yamlls",
         "gopls",
+        "tailwindcss",
       },
       automatic_installation = false,
     },
@@ -101,6 +101,14 @@ return {
           enabled = false,
         },
         capabilities = {
+          textDocument = {
+            completion = {
+              completionItem = {
+                documentationFormat = { "markdown", "plaintext" },
+              },
+            },
+            positionEncoding = { "utf-8" },
+          },
           workspace = {
             fileOperations = {
               didRename = true,
@@ -135,13 +143,39 @@ return {
               },
             },
           },
-          pyright = {},
           jsonls = {},
           prismals = { filetypes = { "prisma" }, settings = { prisma = { prismaFmtBinPath = "prisma-fmt" } } },
           marksman = {},
           cssls = {},
           html = { filetypes = { "html", "twig", "hbs" } },
           ruby_lsp = {},
+          tailwindcss = {
+            filetypes = {
+              "htmlangular",
+              "html",
+              "css",
+              "javascriptreact",
+              "typescriptreact",
+              "javascript",
+              "typescript",
+            },
+            root_dir = require("lspconfig.util").root_pattern("package.json", ".git"),
+
+            settings = {
+              tailwindCSS = {
+                experimental = {
+                  classRegex = {
+                    "tw`(.*?)`",
+                    "clsx\\(([^)]*)\\)",
+                    "cva\\(([^)]*)\\)",
+                    "t(w|c)e?`([a-zA-Z0-9\\s-/:]*)`",
+                    'class="([^"]*)"',
+                    'className="([^"]*)"',
+                  },
+                },
+              },
+            },
+          },
         },
         setup = {},
       }
@@ -193,6 +227,12 @@ return {
         local server_opts = vim.tbl_deep_extend("force", {
           capabilities = vim.deepcopy(capabilities),
         }, opts.servers[server] or {})
+        -- Add explicit css.files setting for Tailwind CSS 4
+        if server == "tailwindcss" then
+          server_opts.settings.tailwindCSS.css = {
+            files = { "**/styles.css", "**/styles.scss" },
+          }
+        end
         if opts.setup[server] then
           if opts.setup[server](server, server_opts) then
             return

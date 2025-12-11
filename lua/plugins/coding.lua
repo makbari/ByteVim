@@ -44,9 +44,6 @@ return {
             if icons[item.kind] then
               item.kind = icons[item.kind] .. " " .. item.kind
             end
-            require("lspkind").cmp_format({
-              before = require("tailwind-tools.cmp").lspkind_format,
-            })
             return item
           end,
         },

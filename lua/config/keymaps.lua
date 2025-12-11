@@ -41,3 +41,4 @@ keymap("n", "g*", "g*zz", opts)
 
 -- Search backward for partial word under cursor and center screen
 keymap("n", "g#", "g#zz", opts)
+keymap("n", "=ap", "ma=ap'a")
