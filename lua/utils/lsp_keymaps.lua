@@ -29,6 +29,7 @@ function M.setup_keymaps()
     { mode = "n", keys = "<leader>fn", func = ByteVim.notes.search_floating_notes, desc = "Find Notes (fzf-lua)" },
     { mode = "n", keys = "<leader>nn", func = ByteVim.notes.floating_note, desc = "New Floating Note" },
     { mode = "n", keys = "<leader>dn", func = ByteVim.notes.delete_note, desc = "Delete Note" },
+    { mode = "n", keys = "<leader>b", func = require("bafa").toggle, desc = "Toggle bafa.nvim UI" },
   }
   for _, keymap in ipairs(keymaps) do
     ByteVim.utils.keymap(keymap.keys, keymap.func, keymap.desc, keymap.mode)
