@@ -352,7 +352,6 @@ return {
         "<leader>ff",
         function()
           local root_dir = ByteVim.path.git()
-          print(root_dir)
           require("fzf-lua").files({ cwd = root_dir, multiprocess = true })
         end,
         desc = "Find Git Files",

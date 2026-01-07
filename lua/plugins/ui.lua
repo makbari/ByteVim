@@ -30,20 +30,11 @@ return {
             {
               "filename",
               path = 1,
-            }, -- Show the file path
+            },
           },
           lualine_x = {
-            { "encoding" },
             { "fileformat" },
             { "filetype" },
-          },
-          lualine_y = { "progress" },
-          lualine_z = {
-            {
-              function()
-                return " " .. os.date("%R")
-              end,
-            },
           },
         },
         extensions = { "neo-tree", "lazy" },
