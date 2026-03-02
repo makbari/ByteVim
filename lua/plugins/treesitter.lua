@@ -3,6 +3,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
     version = false,
     build = ":TSUpdate",
+    branch = "master",
     event = { "BufReadPost", "BufWritePost" },
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
     keys = {
@@ -65,41 +66,41 @@ return {
         move = {
           enable = true,
           goto_next_start = {
-            ["]v"] = "@variable.outer", -- Jump to next variable usage
-            ["]s"] = "@scope", -- Jump to next scope (if supported)
+            ["]v"] = "@variable.outer",
+            ["]s"] = "@scope",
             ["]f"] = "@function.outer",
             ["]c"] = "@class.outer",
             ["]a"] = "@parameter.inner",
-            ["]t"] = "@tag.outer", -- JSX/HTML tag
+            ["]t"] = "@tag.outer",
           },
           goto_next_end = {
             ["]F"] = "@function.outer",
             ["]C"] = "@class.outer",
             ["]A"] = "@parameter.inner",
-            ["]T"] = "@tag.outer", -- JSX/HTML tag
+            ["]T"] = "@tag.outer",
           },
           goto_previous_start = {
-            ["[v"] = "@variable.outer", -- Jump to previous variable usage
-            ["[s"] = "@scope", -- Jump to previous scope
+            ["[v"] = "@variable.outer",
+            ["[s"] = "@scope",
             ["[f"] = "@function.outer",
             ["[c"] = "@class.outer",
             ["[a"] = "@parameter.inner",
-            ["[t"] = "@tag.outer", -- JSX/HTML tag
+            ["[t"] = "@tag.outer",
           },
           goto_previous_end = {
             ["[F"] = "@function.outer",
             ["[C"] = "@class.outer",
             ["[A"] = "@parameter.inner",
-            ["[T"] = "@tag.outer", -- JSX/HTML tag
+            ["[T"] = "@tag.outer",
           },
         },
         swap = {
           enable = true,
           swap_next = {
-            ["<leader>sn"] = "@parameter.inner", -- Swap with next parameter/prop
+            ["<leader>sn"] = "@parameter.inner",
           },
           swap_previous = {
-            ["<leader>sp"] = "@parameter.inner", -- Swap with previous parameter/prop
+            ["<leader>sp"] = "@parameter.inner",
           },
         },
       },
