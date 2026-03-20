@@ -8,6 +8,7 @@ return {
         opts = function(_, opts)
           opts.ensure_installed = opts.ensure_installed or {}
           table.insert(opts.ensure_installed, "js-debug-adapter")
+          table.insert(opts.ensure_installed, "debugpy")
         end,
       },
     },
@@ -24,6 +25,15 @@ return {
             vim.fn.stdpath("data") .. "/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js",
             "${port}",
           },
+        },
+      }
+      dap.adapters.python = {
+        type = "server",
+        host = "localhost",
+        port = "${port}",
+        executable = {
+          command = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python",
+          args = { "-m", "debugpy.adapter" },
         },
       }
       local js_configs = {
@@ -71,6 +81,42 @@ return {
       dap.configurations.typescript = js_configs
       dap.configurations.typescriptreact = js_configs
       dap.configurations.javascriptreact = js_configs
+      -- Added Python configurations
+      dap.configurations.python = {
+        {
+          type = "python",
+          request = "launch",
+          name = "Launch file",
+          program = "${file}",
+          pythonPath = function()
+            local cwd = vim.fn.getcwd()
+            if vim.fn.executable(cwd .. "/venv/bin/python") == 1 then
+              return cwd .. "/venv/bin/python"
+            elseif vim.fn.executable(cwd .. "/.venv/bin/python") == 1 then
+              return cwd .. "/.venv/bin/python"
+            else
+              return "/usr/bin/python"
+            end
+          end,
+        },
+        {
+          type = "python",
+          request = "attach",
+          name = "Attach to remote debugger",
+          host = "localhost",
+          port = 9000,
+          pythonPath = function()
+            local cwd = vim.fn.getcwd()
+            if vim.fn.executable(cwd .. "/venv/bin/python") == 1 then
+              return cwd .. "/venv/bin/python"
+            elseif vim.fn.executable(cwd .. "/.venv/bin/python") == 1 then
+              return cwd .. "/.venv/bin/python"
+            else
+              return "/usr/bin/python"
+            end
+          end,
+        },
+      }
     end,
     config = function()
       local dap = require("dap")
