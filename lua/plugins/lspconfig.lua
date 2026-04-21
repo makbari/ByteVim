@@ -141,7 +141,6 @@ return {
           marksman = {},
           cssls = {},
           html = { filetypes = { "html", "twig", "hbs" } },
-          ruby_lsp = {},
         },
         setup = {},
       }
