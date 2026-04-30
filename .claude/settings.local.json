@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(nvim --version)",
+      "WebFetch(domain:github.com)",
+      "Bash(tree-sitter --version)",
+      "Bash(luac -p /home/moha/.config/nvim/lua/plugins/treesitter.lua)",
+      "Bash(nvim --headless \"+lua print\\('--- starting ---'\\)\" \"+Lazy! sync\" \"+qa\")",
+      "Bash(nvim --headless \"+lua vim.defer_fn\\(function\\(\\) local msgs = vim.api.nvim_exec2\\('messages', {output=true}\\).output; print\\('=== messages ==='\\); print\\(msgs\\); vim.cmd\\('qa'\\) end, 1500\\)\")",
+      "Bash(nvim --headless \"+lua local p = require\\('nvim-treesitter'\\).get_installed\\('parsers'\\); print\\('installed: ' .. table.concat\\(p, ', '\\)\\)\" \"+qa\")",
+      "Bash(nvim --headless \"+lua require\\('nvim-treesitter'\\).install\\({'bash','c','html','javascript','json','lua','markdown','python','typescript','yaml','tsx','svelte','rust','go','gomod','gowork','ron','ruby','embedded_template','git_config','gitcommit','git_rebase','gitignore','gitattributes'}\\):wait\\(180000\\)\" \"+qa\")",
+      "Bash(nvim --headless \"+lua local p = require\\('nvim-treesitter'\\).get_installed\\('parsers'\\); table.sort\\(p\\); print\\('installed \\(' .. #p .. '\\): ' .. table.concat\\(p, ', '\\)\\)\" \"+qa\")",
+      "Bash(nvim --headless /tmp/crash-repro.md \"+lua vim.defer_fn\\(function\\(\\) local m = vim.api.nvim_exec2\\('messages', {output=true}\\).output; print\\('=== MESSAGES ==='\\); print\\(m == '' and '\\(none\\)' or m\\); print\\('=== END ==='\\); local ok, hl = pcall\\(vim.api.nvim_buf_get_var, 0, 'current_syntax'\\); print\\('parser active: ' .. tostring\\(vim.b.ts_highlight\\)\\); vim.cmd\\('qa'\\) end, 2000\\)\")",
+      "Bash(nvim --headless /tmp/crash-repro.md \"+lua vim.deprecate = \\(function\\(orig\\) return function\\(...\\) print\\(debug.traceback\\('=== tbl_flatten DEPRECATE ===', 2\\)\\) return orig\\(...\\) end end\\)\\(vim.deprecate\\)\" \"+lua vim.defer_fn\\(function\\(\\) vim.cmd\\('qa'\\) end, 1500\\)\")",
+      "Bash(nvim --headless /tmp/crash-repro.md \"+lua local orig = vim.tbl_flatten; vim.tbl_flatten = function\\(...\\) print\\(debug.traceback\\('TBL_FLATTEN', 2\\)\\); return orig\\(...\\) end\" \"+lua vim.defer_fn\\(function\\(\\) vim.cmd\\('qa'\\) end, 1500\\)\")",
+      "Bash(nvim --headless /tmp/crash-repro.md \"+checkhealth vim.deprecated\" \"+lua vim.defer_fn\\(function\\(\\) vim.cmd\\('qa'\\) end, 2000\\)\")",
+      "Bash(nvim --headless /tmp/crash-repro.md \"+checkhealth vim.deprecated\" \"+lua vim.defer_fn\\(function\\(\\) local lines = vim.api.nvim_buf_get_lines\\(0, 0, -1, false\\); for _, l in ipairs\\(lines\\) do if l:match\\('tbl_flatten'\\) or l:match\\('deprecat'\\) then print\\(l\\) end end; vim.cmd\\('qa!'\\) end, 3000\\)\")",
+      "Bash(nvim --headless /tmp/crash-repro.md \"+checkhealth vim.deprecated\" \"+lua vim.defer_fn\\(function\\(\\) local lines = vim.api.nvim_buf_get_lines\\(0, 0, -1, false\\); print\\(table.concat\\(lines, '\\\\n'\\)\\); vim.cmd\\('qa!'\\) end, 3000\\)\")"
+    ]
+  }
+}
