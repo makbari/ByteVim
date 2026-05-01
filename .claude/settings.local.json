@@ -15,7 +15,10 @@
       "Bash(nvim --headless /tmp/crash-repro.md \"+lua local orig = vim.tbl_flatten; vim.tbl_flatten = function\\(...\\) print\\(debug.traceback\\('TBL_FLATTEN', 2\\)\\); return orig\\(...\\) end\" \"+lua vim.defer_fn\\(function\\(\\) vim.cmd\\('qa'\\) end, 1500\\)\")",
       "Bash(nvim --headless /tmp/crash-repro.md \"+checkhealth vim.deprecated\" \"+lua vim.defer_fn\\(function\\(\\) vim.cmd\\('qa'\\) end, 2000\\)\")",
       "Bash(nvim --headless /tmp/crash-repro.md \"+checkhealth vim.deprecated\" \"+lua vim.defer_fn\\(function\\(\\) local lines = vim.api.nvim_buf_get_lines\\(0, 0, -1, false\\); for _, l in ipairs\\(lines\\) do if l:match\\('tbl_flatten'\\) or l:match\\('deprecat'\\) then print\\(l\\) end end; vim.cmd\\('qa!'\\) end, 3000\\)\")",
-      "Bash(nvim --headless /tmp/crash-repro.md \"+checkhealth vim.deprecated\" \"+lua vim.defer_fn\\(function\\(\\) local lines = vim.api.nvim_buf_get_lines\\(0, 0, -1, false\\); print\\(table.concat\\(lines, '\\\\n'\\)\\); vim.cmd\\('qa!'\\) end, 3000\\)\")"
+      "Bash(nvim --headless /tmp/crash-repro.md \"+checkhealth vim.deprecated\" \"+lua vim.defer_fn\\(function\\(\\) local lines = vim.api.nvim_buf_get_lines\\(0, 0, -1, false\\); print\\(table.concat\\(lines, '\\\\n'\\)\\); vim.cmd\\('qa!'\\) end, 3000\\)\")",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "Bash(delta --version)"
     ]
   }
 }
