@@ -237,6 +237,14 @@ return {
           return not is_deno(root_dir)
         end)
       end
+
+      -- Angular: only attach inside real Angular workspaces
+      if ByteVim.lsp.is_enabled("angularls") then
+        local is_angular = require("lspconfig.util").root_pattern("angular.json", "project.json")
+        ByteVim.lsp.disable("angularls", function(root_dir)
+          return not is_angular(root_dir)
+        end)
+      end
     end,
   },
   { "mason-org/mason.nvim", version = "^1.0.0" },

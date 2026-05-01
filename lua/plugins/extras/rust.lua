@@ -70,6 +70,31 @@ return {
     end,
   },
   {
+    "neovim/nvim-lspconfig",
+    opts = {
+      servers = { rust_analyzer = { enabled = false } },
+      setup = {
+        rust_analyzer = function()
+          return true
+        end,
+      },
+    },
+  },
+  {
+    "williamboman/mason-lspconfig.nvim",
+    optional = true,
+    opts = function(_, opts)
+      opts.ensure_installed = vim.tbl_filter(function(s)
+        return s ~= "rust_analyzer"
+      end, opts.ensure_installed or {})
+      opts.automatic_installation = opts.automatic_installation or {}
+      if type(opts.automatic_installation) == "table" then
+        opts.automatic_installation.exclude = opts.automatic_installation.exclude or {}
+        table.insert(opts.automatic_installation.exclude, "rust_analyzer")
+      end
+    end,
+  },
+  {
     "mrcjkb/rustaceanvim",
     version = "^6",
     lazy = false,
