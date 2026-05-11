@@ -1,5 +1,26 @@
 return {
   {
+    "f-person/git-blame.nvim",
+    cmd = {
+      "GitBlameToggle",
+      "GitBlameEnable",
+      "GitBlameOpenCommitURL",
+      "GitBlameCopyCommitURL",
+      "GitBlameOpenFileURL",
+      "GitBlameCopyFileURL",
+      "GitBlameCopySHA",
+    },
+    keys = {
+      { "<leader>gbo", "<cmd>GitBlameOpenCommitURL<cr>", desc = "GitBlame: Open commit URL" },
+      { "<leader>gbc", "<cmd>GitBlameCopyCommitURL<cr>", desc = "GitBlame: Copy commit URL" },
+      { "<leader>gbf", "<cmd>GitBlameOpenFileURL<cr>", desc = "GitBlame: Open file URL" },
+      { "<leader>gbF", "<cmd>GitBlameCopyFileURL<cr>", desc = "GitBlame: Copy file URL" },
+      { "<leader>gbs", "<cmd>GitBlameCopySHA<cr>", desc = "GitBlame: Copy SHA" },
+      { "<leader>gbt", "<cmd>GitBlameToggle<cr>", desc = "GitBlame: Toggle" },
+    },
+    opts = {},
+  },
+  {
     "kdheepak/lazygit.nvim",
     cmd = {
       "LazyGit",
@@ -12,7 +33,7 @@ return {
       "nvim-lua/plenary.nvim",
     },
     keys = {
-      { "<leader>lg", "<cmd>LazyGit<cr>", desc = "Open lazy git" },
+      { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
     },
   },
   {
@@ -21,8 +42,8 @@ return {
       signs = {
         add = { text = "▎" },
         change = { text = "▎" },
-        delete = { text = "" },
-        topdelete = { text = "" },
+        delete = { text = "" },
+        topdelete = { text = "" },
         changedelete = { text = "▎" },
         untracked = { text = "▎" },
       },
@@ -54,19 +75,22 @@ return {
   },
   {
     "sindrets/diffview.nvim",
-    init = function()
-      vim.keymap.set("n", "<leader>dfv", function()
-        if next(require("diffview.lib").views) == nil then
-          vim.cmd("DiffviewOpen")
-        else
-          vim.cmd("DiffviewClose")
-        end
-      end, { desc = "Diffview | Toggle Diffview", silent = true })
-    end,
     event = "BufReadPost",
+    keys = {
+      {
+        "<leader>gd",
+        function()
+          if next(require("diffview.lib").views) == nil then
+            vim.cmd("DiffviewOpen")
+          else
+            vim.cmd("DiffviewClose")
+          end
+        end,
+        desc = "Diffview: Toggle",
+      },
+    },
   },
   { "akinsho/git-conflict.nvim", version = "*", config = true },
-
   {
     "pwntester/octo.nvim",
     cmd = "Octo",
@@ -74,15 +98,15 @@ return {
     opts = {
       enable_builtin = true,
       default_merge_method = "squash",
-      picker = "telescope",
+      picker = "fzf-lua",
     },
     keys = {
-      { "<leader>gi", "<cmd>Octo issue list<CR>", desc = "List Issues (Octo)" },
-      { "<leader>gI", "<cmd>Octo issue search<CR>", desc = "Search Issues (Octo)" },
-      { "<leader>gp", "<cmd>Octo pr list<CR>", desc = "List PRs (Octo)" },
-      { "<leader>gP", "<cmd>Octo pr search<CR>", desc = "Search PRs (Octo)" },
-      { "<leader>gr", "<cmd>Octo repo list<CR>", desc = "List Repos (Octo)" },
-      { "<leader>gS", "<cmd>Octo search<CR>", desc = "Search (Octo)" },
+      { "<leader>goi", "<cmd>Octo issue list<CR>", desc = "Octo: List issues" },
+      { "<leader>goI", "<cmd>Octo issue search<CR>", desc = "Octo: Search issues" },
+      { "<leader>gop", "<cmd>Octo pr list<CR>", desc = "Octo: List PRs" },
+      { "<leader>goP", "<cmd>Octo pr search<CR>", desc = "Octo: Search PRs" },
+      { "<leader>gor", "<cmd>Octo repo list<CR>", desc = "Octo: List repos" },
+      { "<leader>gos", "<cmd>Octo search<CR>", desc = "Octo: Search" },
 
       { "<localleader>a", "", desc = "+assignee (Octo)", ft = "octo" },
       { "<localleader>c", "", desc = "+comment/code (Octo)", ft = "octo" },
@@ -98,27 +122,4 @@ return {
       { "#", "#<C-x><C-o>", mode = "i", ft = "octo", silent = true },
     },
   },
-
-  -- {
-  --   "pwntester/octo.nvim",
-  --   cmd = "Octo",
-  --   dependencies = {
-  --     "nvim-lua/plenary.nvim",
-  --     "nvim-telescope/telescope.nvim",
-  --     "nvim-tree/nvim-web-devicons",
-  --   },
-  --   config = function()
-  --     require("octo").setup({
-  --       enable_builtin = true,
-  --       use_local_fs = true,
-  --     })
-  --     vim.cmd([[hi OctoEditable guibg=none]])
-  --     vim.treesitter.language.register("markdown", "octo")
-  --   end,
-  --   keys = {
-  --     { "<leader>O", "<cmd>Octo<cr>", desc = "Octo" },
-  --     { "<leader>Op", "<cmd>Octo pr list<cr>", desc = "Octo pr list" },
-  --     { "<leader>Oi", "<cmd>Octo issue list<cr>", desc = "Octo issue list" },
-  --   },
-  -- },
 }

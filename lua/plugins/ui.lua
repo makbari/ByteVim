@@ -78,9 +78,9 @@ return {
       dashboard = {
         preset = {
           keys = {
-            { icon = " ", key = "f", desc = "Find File", action = ":Telescope find_files" },
+            { icon = " ", key = "f", desc = "Find File", action = ":FzfLua files" },
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-            { icon = " ", key = "r", desc = "Recent Files", action = ":Telescope oldfiles" },
+            { icon = " ", key = "r", desc = "Recent Files", action = ":FzfLua oldfiles" },
             { icon = " ", key = "c", desc = "Config", action = ":edit $MYVIMRC" },
             { icon = " ", key = "q", desc = "Quit", action = ":qa" },
           },

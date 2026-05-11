@@ -46,26 +46,61 @@ Keymaps for TypeScript development with `twoslash-queries.nvim`.
 
 ---
 
-## Git Keymaps (`git.lua`)
+## Git Keymaps (`git.lua`, `pickers.lua`)
 
-### Custom Keymaps
+All git-related keymaps live under `<leader>g*`, sub-namespaced by tool:
 
-Keymaps for Git operations.
+- **`<leader>gh*`** — gitsigns hunks
+- **`<leader>gb*`** — git-blame
+- **`<leader>gf*`** — fzf-lua git pickers
+- **`<leader>go*`** — octo (GitHub)
+- **`<leader>lg`** — lazygit
+- **`<leader>gd`** — diffview toggle
 
-- **`<leader>lg`**: Opens LazyGit interface.
-- **`]h`**: Moves to next Git hunk.
-- **`[h`**: Moves to previous Git hunk.
-- **`<leader>ghs`**: Stages current hunk (normal/visual).
-- **`<leader>ghr`**: Resets current hunk (normal/visual).
-- **`<leader>ghS`**: Stages entire buffer.
-- **`<leader>ghu`**: Undoes hunk staging.
-- **`<leader>ghR`**: Resets entire buffer.
-- **`<leader>ghp`**: Previews hunk inline.
-- **`<leader>ghb`**: Shows blame for current line.
-- **`<leader>ghd`**: Shows diff for current file.
-- **`<leader>ghD`**: Shows diff against previous commit.
-- **`ih`**: Selects current hunk (operator/visual).
-- **`<leader>dfv`**: Toggles Diffview plugin.
+### Hunks (gitsigns) — `<leader>gh*`
+
+- **`]h`**: Next Git hunk.
+- **`[h`**: Previous Git hunk.
+- **`<leader>ghs`**: Stage current hunk (normal/visual).
+- **`<leader>ghr`**: Reset current hunk (normal/visual).
+- **`<leader>ghS`**: Stage entire buffer.
+- **`<leader>ghu`**: Undo hunk staging.
+- **`<leader>ghR`**: Reset entire buffer.
+- **`<leader>ghp`**: Preview hunk inline.
+- **`<leader>ghb`**: Blame current line.
+- **`<leader>ghd`**: Diff current file.
+- **`<leader>ghD`**: Diff against previous commit.
+- **`ih`**: Select current hunk (operator/visual).
+
+### Blame (git-blame.nvim) — `<leader>gb*`
+
+- **`<leader>gbo`**: Open commit URL in browser.
+- **`<leader>gbc`**: Copy commit URL.
+- **`<leader>gbf`**: Open file URL in browser.
+- **`<leader>gbF`**: Copy file URL.
+- **`<leader>gbs`**: Copy commit SHA.
+- **`<leader>gbt`**: Toggle inline blame.
+
+### Pickers (fzf-lua) — `<leader>gf*`
+
+- **`<leader>gfs`**: Git status picker.
+- **`<leader>gfc`**: Git commits picker.
+- **`<leader>gfb`**: Git branches picker.
+- **`<leader>gfB`**: Buffer commits picker.
+
+### GitHub (octo) — `<leader>go*`
+
+- **`<leader>goi`**: List issues.
+- **`<leader>goI`**: Search issues.
+- **`<leader>gop`**: List PRs.
+- **`<leader>goP`**: Search PRs.
+- **`<leader>gor`**: List repos.
+- **`<leader>gos`**: General search.
+
+### Standalone
+
+- **`<leader>lg`**: Open lazygit.
+- **`<leader>gd`**: Toggle Diffview.
 
 ---
 
@@ -102,70 +137,69 @@ Default keymaps from `mini.pairs`, `mini.surround`, and `Comment.nvim`.
 
 ---
 
-## Editor Keymaps (`editor.lua`)
+## Editor Keymaps
 
-### Custom Keymaps
+Plugins previously bundled in `editor.lua` now live in `pickers.lua`, `navigation.lua`, `files.lua`, `refactor.lua`, `ui-floats.lua`, and `todo-undo.lua`.
 
-Keymaps for editor navigation, searching, and Git tasks.
+### Files (`files.lua`)
 
-- **`<leader>er`**: Opens Neo-tree in floating window.
-- **`<leader><Tab>`**: Toggles Neo-tree on left.
-- **`<leader>sr`**: Opens GrugFar for search/replace (normal/visual).
-- **`<leader>gB`**: Opens commit URL (GitBlame).
-- **`<leader>gc`**: Copies commit URL (GitBlame).
-- **`<leader>gf`**: Opens file URL (GitBlame).
-- **`<leader>gC`**: Copies file URL (GitBlame).
-- **`<leader>gs`**: Copies commit SHA (GitBlame).
-- **`<leader>gt`**: Toggles Git blame (GitBlame).
-- **`<C-g>`**: Searches files with Telescope live grep (normal); greps selection (visual).
-- **`<leader>sw`**: Greps selection (visual) or word under cursor (normal) in Git root.
-- **`<leader>fr`**: Finds recent files in Git root (Telescope).
-- **`<leader>/`**: Greps files in current directory (Telescope).
-- **`<leader>ff`**: Finds Git-tracked files in Git root (Telescope).
-- **`<leader>fc`**: Finds Neovim config files (Telescope).
-- **`<leader>sb`**: Searches current buffer (Telescope).
-- **`<leader>sB`**: Searches open buffers (Telescope).
-- **`<leader>sW`**: Searches exact WORD in Git root (Telescope).
-- **`<leader>gs`**: Shows Git status (Telescope).
-- **`<leader>gc`**: Shows Git commits (Telescope).
-- **`<leader>gb`**: Shows Git branches (Telescope).
-- **`<leader>gB`**: Shows buffer commits (Telescope).
-- **`<leader>sa`**: Finds commands (Telescope).
-- **`<leader>s:`**: Searches command history (Telescope).
-- **`<leader>ss`**: Shows LSP document symbols (Telescope).
-- **`<leader>sS`**: Shows LSP workspace symbols (Telescope).
-- **`<leader>si`**: Shows LSP incoming calls (Telescope).
-- **`<leader>so`**: Shows LSP outgoing calls (Telescope).
-- **`<leader>sk`**: Searches keymaps (Telescope).
-- **`<leader>sm`**: Searches marks (Telescope).
-- **`<leader>sc`**: Searches colorschemes (Telescope).
-- **`<leader>sh`**: Searches help tags (Telescope).
-- **`<leader>sq`**: Searches quickfix list (Telescope).
-- **`<leader>fm`**: Opens Harpoon marks in Telescope.
-- **`<C-e>`**: Toggles Harpoon quick menu.
-- **`<leader>a`**: Adds file to Harpoon.
-- **`<leader>h`**: Selects Harpoon mark 1.
-- **`<leader>j`**: Selects Harpoon mark 2.
-- **`<leader>k`**: Selects Harpoon mark 3.
-- **`<leader>l`**: Selects Harpoon mark 4.
-- **`<leader><C-p>`**: Navigates to next Harpoon mark.
-- **`<leader><C-n>`**: Navigates to previous Harpoon mark.
-- **`]]`**: Moves to next reference (vim-illuminate).
-- **`[[`**: Moves to previous reference (vim-illuminate).
-- **`<leader>S`**: Toggles Symbols Outline.
-- **`<leader>rn`**: Opens IncRename command (overwrites LSP rename).
-- **`<leader>rm`**: Opens refactoring menu (visual).
-- **`<leader>dv`**: Prints variables below (normal/visual).
-- **`<leader>dV`**: Prints variables above (normal/visual).
-- **`<leader>dc`**: Clears debugging statements.
-- **`<C-h>`**: Moves to left Tmux window.
-- **`<C-j>`**: Moves to downward Tmux window.
-- **`<C-k>`**: Moves to upward Tmux window.
-- **`<C-l>`**: Moves to right Tmux window.
-- **`<leader>fT`**: Searches TODO comments (Telescope).
-- **`<leader>uT`**: Toggles UndoTree window.
-- **`<leader>zz`**: Toggles Zen mode (wide, 140 columns).
-- **`<leader>zZ`**: Toggles Zen mode (narrow, 80 columns).
+- **`<leader>er`**: Open Neo-tree in floating window.
+- **`<leader><Tab>`**: Toggle Neo-tree on left.
+- **`<leader>sr`**: Open GrugFar for search/replace (normal/visual).
+
+### Pickers — fzf-lua (`pickers.lua`)
+
+- **`<C-g>`**: Live grep in project (normal/visual).
+- **`<leader>fi`**: Find all files including gitignored.
+- **`<leader>fI`**: Grep all files including gitignored.
+- **`<leader>fr`**: Recent files (git root).
+- **`<leader>/`**: Live grep in current directory.
+- **`<leader>fa`**: Search git-tracked files (`git grep`).
+- **`<leader>F`**: Find all files (with hidden).
+- **`<leader>ff`**: Find git files.
+- **`<leader>fc`**: Find files in Neovim config.
+- **`<leader>sb`**: Search current buffer.
+- **`<leader>sB`**: Search lines in open buffers.
+- **`<leader>sw`** / **`<leader>sW`**: Search word/WORD under cursor (git root).
+- **`<leader>sa`**: Find commands.
+- **`<leader>ss`** / **`<leader>sS`**: LSP document/workspace symbols.
+- **`<leader>si`** / **`<leader>so`**: LSP incoming/outgoing calls.
+- **`<leader>sk`** / **`<leader>sm`** / **`<leader>sc`** / **`<leader>sh`** / **`<leader>sq`**: Keymaps / marks / colorschemes / help / quickfix.
+
+### Navigation (`navigation.lua`)
+
+- **`<C-e>`**: Toggle Harpoon quick menu.
+- **`<leader>a`**: Add file to Harpoon.
+- **`<leader>h`** / **`<leader>j`** / **`<leader>k`** / **`<leader>l`**: Select Harpoon marks 1–4.
+- **`<leader><C-p>`** / **`<leader><C-n>`**: Next/previous Harpoon mark.
+- **`<leader>fm`**: Open Harpoon marks in Telescope.
+- **`]]`** / **`[[`**: Next/previous reference (vim-illuminate).
+- **`<C-h>`** / **`<C-j>`** / **`<C-k>`** / **`<C-l>`**: Move between Tmux/Neovim splits.
+
+### Refactor (`refactor.lua`)
+
+- **`<leader>S`**: Toggle Symbols Outline.
+- **`<leader>rn`**: IncRename (overrides LSP rename).
+- **`<leader>rm`**: Refactoring menu (visual).
+- **`<leader>dv`** / **`<leader>dV`**: Print variable below/above (refactoring.nvim).
+- **`<leader>dc`**: Clear debugging statements.
+
+### UI floats (`ui-floats.lua`)
+
+- **`<leader>zz`**: Zen mode (wide, 140 cols).
+- **`<leader>zZ`**: Zen mode (narrow, 80 cols).
+- **`<leader>b`**: Toggle bafa.nvim.
+
+### Todo & undo (`todo-undo.lua`)
+
+- **`<leader>fT`**: TodoTelescope (search TODO comments).
+- **`<leader>uT`**: Toggle UndoTree.
+
+### Notes (`notes.lua`)
+
+- **`<leader>nn`**: New floating note.
+- **`<leader>fn`**: Find notes.
+- **`<leader>dn`**: Delete note.
 
 ### Default Keymaps
 

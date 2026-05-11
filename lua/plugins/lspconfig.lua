@@ -1,7 +1,8 @@
 -- lua/plugins/lspconfig.lua
 return {
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
+    version = "^1.0.0",
     cmd = "Mason",
     keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
     build = ":MasonUpdate",
@@ -34,16 +35,13 @@ return {
     end,
   },
   {
-    "williamboman/mason-lspconfig.nvim",
+    "mason-org/mason-lspconfig.nvim",
+    version = "^1.0.0",
     dependencies = { "neovim/nvim-lspconfig" },
     opts = {
       ensure_installed = {
-        "lua_ls",
-        "pyright",
         "jsonls",
-        "marksman",
         "cssls",
-        "html",
         "prismals",
         "yamlls",
         "gopls",
@@ -57,8 +55,8 @@ return {
     version = ByteVim.versions.lspconfig,
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      "williamboman/mason.nvim",
-      "williamboman/mason-lspconfig.nvim",
+      "mason-org/mason.nvim",
+      "mason-org/mason-lspconfig.nvim",
       { "j-hui/fidget.nvim", opts = {} },
       "hrsh7th/cmp-nvim-lsp",
     },
@@ -114,34 +112,9 @@ return {
           timeout_ms = nil,
         },
         servers = {
-          lua_ls = {
-            settings = {
-              Lua = {
-                workspace = {
-                  checkThirdParty = false,
-                  library = {
-                    "${3rd}/luv/library",
-                    unpack(vim.api.nvim_get_runtime_file("", true)),
-                  },
-                },
-                completion = { callSnippet = "Replace" },
-                hint = {
-                  enable = false,
-                  setType = false,
-                  paramType = true,
-                  paramName = "Disable",
-                  semicolon = "Disable",
-                  arrayIndex = "Disable",
-                },
-              },
-            },
-          },
-          pyright = {},
           jsonls = {},
           prismals = { filetypes = { "prisma" }, settings = { prisma = { prismaFmtBinPath = "prisma-fmt" } } },
-          marksman = {},
           cssls = {},
-          html = { filetypes = { "html", "twig", "hbs" } },
           taplo = {},
         },
         setup = {},
@@ -249,6 +222,4 @@ return {
       end
     end,
   },
-  { "mason-org/mason.nvim", version = "^1.0.0" },
-  { "mason-org/mason-lspconfig.nvim", version = "^1.0.0" },
 }

@@ -1,4 +1,15 @@
 return {
+  -- Snippet engine (used by neogen)
+  {
+    "L3MON4D3/LuaSnip",
+    version = "v2.*",
+    build = (function()
+      if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then
+        return nil
+      end
+      return "make install_jsregexp"
+    end)(),
+  },
   -- Auto Completion
   {
     "hrsh7th/nvim-cmp",
@@ -40,13 +51,14 @@ return {
         }),
         formatting = {
           format = function(entry, item)
-            local icons = require("config.icons").kind -- Adjust based on your icon config
+            local icons = require("config.icons").kind
             if icons[item.kind] then
               item.kind = icons[item.kind] .. " " .. item.kind
             end
-            require("lspkind").cmp_format({
-              before = require("tailwind-tools.cmp").lspkind_format,
-            })
+            local ok, tw = pcall(require, "tailwind-tools.cmp")
+            if ok then
+              item = require("lspkind").cmp_format({ before = tw.lspkind_format })(entry, item)
+            end
             return item
           end,
         },
@@ -65,7 +77,6 @@ return {
       modes = { insert = true, command = true, terminal = false },
     },
   },
-  { "jiangmiao/auto-pairs" },
 
   -- Comments
   {
@@ -193,16 +204,18 @@ return {
   --   config = true,
   -- },
   {
-    "norcalli/nvim-colorizer.lua",
-    enabled = true,
-    config = function()
-      require("colorizer").setup({
-        "css",
-        "scss",
-        "javascript",
-      }, {
+    "catgoose/nvim-colorizer.lua",
+    event = "BufReadPre",
+    opts = {
+      filetypes = { "css", "scss", "javascript", "html", "lua", "vim" },
+      user_default_options = {
         mode = "background",
-      })
-    end,
+        names = false,
+        RRGGBBAA = true,
+        rgb_fn = true,
+        hsl_fn = true,
+        tailwind = false,
+      },
+    },
   },
 }

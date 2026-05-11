@@ -1,6 +1,8 @@
 local M = {}
-function M.setup_keymaps()
+
+function M.setup_keymaps(client, buffer)
   local fzf_lua = require("fzf-lua")
+  local buf_opts = { buffer = buffer }
   local keymaps = {
     { mode = "n", keys = "gd", func = fzf_lua.lsp_definitions, desc = "Go to definition" },
     { mode = "n", keys = "gD", func = fzf_lua.lsp_declarations, desc = "Go to declaration" },
@@ -18,21 +20,22 @@ function M.setup_keymaps()
     { mode = "n", keys = "<leader>ed", func = vim.diagnostic.open_float, desc = "Open diagnostics" },
     { mode = "n", keys = "[d", func = vim.diagnostic.goto_prev, desc = "Previous diagnostic" },
     { mode = "n", keys = "]d", func = vim.diagnostic.goto_next, desc = "Next diagnostic" },
-    {
+  }
+
+  if client and client:supports_method("textDocument/inlayHint") then
+    table.insert(keymaps, {
       mode = "n",
       keys = "<leader>ih",
       func = function()
-        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = buffer }), { bufnr = buffer })
       end,
       desc = "Toggle inlay hints",
-    },
-    { mode = "n", keys = "<leader>fn", func = ByteVim.notes.search_floating_notes, desc = "Find Notes (fzf-lua)" },
-    { mode = "n", keys = "<leader>nn", func = ByteVim.notes.floating_note, desc = "New Floating Note" },
-    { mode = "n", keys = "<leader>dn", func = ByteVim.notes.delete_note, desc = "Delete Note" },
-    { mode = "n", keys = "<leader>b", func = require("bafa").toggle, desc = "Toggle bafa.nvim UI" },
-  }
+    })
+  end
+
   for _, keymap in ipairs(keymaps) do
-    ByteVim.utils.keymap(keymap.keys, keymap.func, keymap.desc, keymap.mode)
+    ByteVim.utils.keymap(keymap.keys, keymap.func, keymap.desc, keymap.mode, buf_opts)
   end
 end
+
 return M

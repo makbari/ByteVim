@@ -45,8 +45,16 @@ return {
         ts.install(missing)
       end
 
+      -- Filetypes whose bundled treesitter queries are broken against the
+      -- locally installed parser version. Add to skip if you hit a
+      -- "Query error ... Invalid node type" in the highlighter.
+      local skip_treesitter = { vim = true }
+
       vim.api.nvim_create_autocmd("FileType", {
         callback = function(args)
+          if skip_treesitter[vim.bo[args.buf].filetype] then
+            return
+          end
           if pcall(vim.treesitter.start, args.buf) then
             vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
           end

@@ -18,7 +18,7 @@ The language we use when talking about this Neovim configuration. Prefer these t
 
 **Plugin spec** — a Lua table returned from a `lua/plugins/*.lua` (or `extras/*.lua`) file, conforming to `lazy.nvim`'s spec format.
 
-**Plugin group** — a file under `lua/plugins/` that bundles several plugin specs by topic: `editor`, `coding`, `git`, `ui`, `lspconfig`, `treesitter`, `dap`, `formatting`, `linting`, `ai`, `colorscheme`. The grouping is editorial, not enforced by lazy.nvim.
+**Plugin group** — a file under `lua/plugins/` that bundles several plugin specs by topic: `pickers`, `navigation`, `files`, `refactor`, `ui-floats`, `todo-undo`, `coding`, `git`, `ui`, `lspconfig`, `treesitter`, `dap`, `formatting`, `linting`, `ai`, `colorscheme`, `notes`. The grouping is editorial, not enforced by lazy.nvim.
 
 **Filetype pack** (a.k.a. **extras**) — a file under `lua/plugins/extras/` that extends the LSP server registry, treesitter parsers, mason ensure-installed list, and optionally adds filetype-specific plugins, for one language or framework (e.g. `rust.lua`, `typescript.lua`, `go.lua`). Imported individually in `lua/config/lazy.lua`'s `spec` block.
 
@@ -50,7 +50,7 @@ The language we use when talking about this Neovim configuration. Prefer these t
 
 ## Custom features
 
-**Floating note** — the personal note-taking feature in `lua/utils/notes.lua`. Creates dated markdown files under `~/notes/`, opens them in a centred floating window, autosaves on `BufLeave`. Currently lives under `utils/` but is a feature, not a utility.
+**Floating note** — the personal note-taking feature in `lua/plugins/notes.lua`. Creates dated markdown files under `~/notes/`, opens them in a centred floating window, autosaves on `BufLeave`. Keymaps: `<leader>nn` (new), `<leader>fn` (find), `<leader>dn` (delete).
 
 **Bafa toggle** — buffer-line UI from `mistweaverco/bafa.nvim`, toggled with `<leader>b`. Wired into LSP keymaps (which is unrelated to LSP — incidental coupling).
 
