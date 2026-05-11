@@ -47,6 +47,7 @@ return {
         "prismals",
         "yamlls",
         "gopls",
+        "taplo",
       },
       automatic_installation = false,
     },
@@ -141,6 +142,7 @@ return {
           marksman = {},
           cssls = {},
           html = { filetypes = { "html", "twig", "hbs" } },
+          taplo = {},
         },
         setup = {},
       }
