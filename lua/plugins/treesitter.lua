@@ -6,6 +6,7 @@ return {
     build = ":TSUpdate",
     opts = {
       ensure_installed = {
+        "angular",
         "bash",
         "c",
         "html",
