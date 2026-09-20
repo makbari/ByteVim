@@ -37,4 +37,10 @@ return {
       vim.g.nord_bold = true
     end,
   },
+  {
+    "wtfox/luna.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+  },
 }

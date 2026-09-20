@@ -27,15 +27,20 @@ return {
           },
         },
       }
-      dap.adapters.python = {
-        type = "server",
-        host = "localhost",
-        port = "${port}",
-        executable = {
-          command = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python",
-          args = { "-m", "debugpy.adapter" },
-        },
-      }
+      dap.adapters.python = function(cb, config)
+        if config.request == "attach" then
+          -- connect straight to the running debugpy listener (e.g. in Docker)
+          local conn = config.connect or config
+          cb({ type = "server", host = conn.host or "127.0.0.1", port = conn.port })
+        else
+          -- debugpy.adapter talks DAP over stdio, so it must be an executable adapter
+          cb({
+            type = "executable",
+            command = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python",
+            args = { "-m", "debugpy.adapter" },
+          })
+        end
+      end
       local js_configs = {
         {
           type = "pwa-node",
@@ -105,6 +110,10 @@ return {
           name = "Attach to remote debugger",
           host = "localhost",
           port = 9000,
+          justMyCode = false,
+          pathMappings = {
+            { localRoot = "${workspaceFolder}", remoteRoot = "/app" },
+          },
           pythonPath = function()
             local cwd = vim.fn.getcwd()
             if vim.fn.executable(cwd .. "/venv/bin/python") == 1 then
