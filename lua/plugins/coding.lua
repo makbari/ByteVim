@@ -1,4 +1,21 @@
 return {
+  -- Inline LSP signature help while typing arguments
+  {
+    "ray-x/lsp_signature.nvim",
+    event = "InsertEnter",
+    opts = {
+      bind = true,
+      hint_enable = false,
+      handler_opts = { border = "rounded" },
+    },
+  },
+  -- Treesitter-based colored bracket matching
+  {
+    "HiPhish/rainbow-delimiters.nvim",
+    event = "BufReadPost",
+    main = "rainbow-delimiters.setup",
+    opts = {},
+  },
   -- Snippet engine (used by neogen)
   {
     "L3MON4D3/LuaSnip",

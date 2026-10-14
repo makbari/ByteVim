@@ -58,6 +58,7 @@ return {
       "mason-org/mason.nvim",
       "mason-org/mason-lspconfig.nvim",
       { "j-hui/fidget.nvim", opts = {} },
+      { "b0o/schemastore.nvim", lazy = true },
       "hrsh7th/cmp-nvim-lsp",
     },
     opts = function()
@@ -112,7 +113,23 @@ return {
           timeout_ms = nil,
         },
         servers = {
-          jsonls = {},
+          jsonls = {
+            settings = {
+              json = {
+                schemas = require("schemastore").json.schemas(),
+                validate = { enable = true },
+              },
+            },
+          },
+          yamlls = {
+            settings = {
+              yaml = {
+                schemaStore = { enable = false, url = "" },
+                schemas = require("schemastore").yaml.schemas(),
+                validate = { enable = true },
+              },
+            },
+          },
           prismals = { filetypes = { "prisma" }, settings = { prisma = { prismaFmtBinPath = "prisma-fmt" } } },
           cssls = {},
           taplo = {},
