@@ -41,3 +41,8 @@ keymap("n", "g*", "g*zz", opts)
 
 -- Search backward for partial word under cursor and center screen
 keymap("n", "g#", "g#zz", opts)
+
+-- Toggle inlay hints globally
+keymap("n", "<leader>ih", function()
+  vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())
+end, { desc = "Toggle inlay hints" })

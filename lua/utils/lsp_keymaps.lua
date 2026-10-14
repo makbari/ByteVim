@@ -22,16 +22,6 @@ function M.setup_keymaps(client, buffer)
     { mode = "n", keys = "]d", func = vim.diagnostic.goto_next, desc = "Next diagnostic" },
   }
 
-  if client and client:supports_method("textDocument/inlayHint") then
-    table.insert(keymaps, {
-      mode = "n",
-      keys = "<leader>ih",
-      func = function()
-        vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = buffer }), { bufnr = buffer })
-      end,
-      desc = "Toggle inlay hints",
-    })
-  end
 
   for _, keymap in ipairs(keymaps) do
     ByteVim.utils.keymap(keymap.keys, keymap.func, keymap.desc, keymap.mode, buf_opts)
